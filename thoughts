@@ -1,0 +1,118 @@
+-------------------NEWEST APPROACH - SYNCHRONIZED OS---------------
+
+Name: synOS
+Prefix: syn_
+
+Device use:
+    Connect to server
+    Join session
+    Start synchronized tasks
+        get state
+        update state
+        set state
+
+Server use:
+    Start up server
+    maintain sessions
+    maintain shared data
+
+
+Syncrhonized Task:
+    - state transition function
+        - previous_state -> next_state
+        - previous state = local_state + shared_state
+    - task tick flow:
+        - get previous_state
+        - if shared state has desynched:
+            - perform rollbacks
+        - perform calculations
+        - update next_state
+
+
+-------------------NEW APPROACH - SHARED MEMORY -------------------
+
+Name:   synchronized shared memory
+Prefix: sync_
+
+Interface:
+
+task interface:
+    void sync_tsk_init()
+    void sync_tsk_start()
+    void sync_tsk_end()
+    void sync_tsk()
+
+shared memory interface:
+    int sync_mem_new(key, size, permissions/protections, options)
+    int sync_mem_get(key, data*)
+    int sync_mem_free(key)
+
+mutex interface:
+
+
+
+------------------- OLD APPROACH - PACKET MESSAGES -------------------
+
+Creating a session:
+    - Client connects to server (TCP/IP)
+    - Client sends new session packet
+        - details tbd
+    - Server generates new session
+    - Server registers client in session
+    - Every tick:
+        -  server sends a tick update packet to every client in session
+            - (session_id, tick_id, ... )
+        - server records acks from clients
+
+Connecting to a session:
+    - Client connects to server (TCP/IP)
+    - Client sends connection to session packet
+        - details tbd (session_id, ... )
+    - Server registers client in session
+    - Client waits for ack packet
+        - sync local data
+        - tick id
+        - client id
+    - Every tick:
+        - client updates local state
+        - client acks server tick update
+            - sync data with server
+            - perform necessary rollbacks
+
+Messaging:
+    - Message types:
+        - Server:
+            - broadcast
+            - direct
+        - Client:
+            - server
+            - broadcast
+            - direct
+    - connection ids
+        - server is always 0
+        - server assigns to clients in order of connection to sessions
+    - address
+        - session: server.session
+            - client to client: session.client
+            - client to server: session.0
+            - client to all:    session.FFFF
+            
+            
+Server Tick:
+    - server processes all incoming packets:
+        - route all packets based on address to outgoing queues
+    - server processes all server addressed packets:
+        - call handler for each packet in server addressed queue
+    - send entire outgoing queue
+
+Client Tick:
+    - client processes incoming packets:
+        - call handlers for each packet type
+    - client performs other processing
+        - may or may not queue packets
+    - client sends all queued packets
+
+Uses:
+    - synchronize control systems for wirelessly networked devices
+    - gaming boys   
+    - imrpove responsiveness for local IoT networked devices
