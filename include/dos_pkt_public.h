@@ -34,6 +34,7 @@ void pkt_init( pkt_intf intf );
 void pkt_start( pkt_cfg cfg, void* pkt );
 void pkt_updt( void* pkt, pkt_stat* stat );
 void pkt_get( void* pkt, pkt_stat* stat );
+void pkt_put( void* pkt, pkt_stat* stat );
 void pkt_stop( pkt_cfg* cfg, pkt_stat* stat );
 
 void pkt_deinit();

@@ -1,16 +1,15 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**",
-                "/usr/include/SDL2/"
+                "${workspaceFolder}/**"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/gcc",
-            "cStandard": "gnu18",
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
             "cppStandard": "gnu++14",
-            "intelliSenseMode": "gcc-x64"
+            "intelliSenseMode": "clang-x64"
         }
     ],
     "version": 4
