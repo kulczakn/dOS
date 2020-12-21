@@ -1,10 +1,13 @@
 #ifndef _CDDP_PUBLIC_H_
 #define _CDDP_PUBLIC_H_
 
+#include <pthread.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include <arpa/inet.h> 
@@ -15,6 +18,7 @@
 #define CDDP_DATA_SIZE  128
 #define CDDP_SERV_PORT  8989
 #define CDDP_SERV_ADDR  "localhost"
+#define CDDP_STACK_SIZE 4096
 
 // CDDP types
 
@@ -95,6 +99,8 @@ typedef enum {
 } cddp_mntr_frmt_t;
 
 
+typedef uint64_t cddp_data_tick_t;
+
 typedef enum {
     CDDP_SNSR_FIRST = 0,
 
@@ -121,6 +127,6 @@ void cddp_data_on( cddp_data_id_t id );
 void cddp_data_off( cddp_data_id_t id );
 
 void cddp_data_set( cddp_data_id_t id, void* data );
-void cddp_data_get( cddp_data_id_t id, void* data );
+void cddp_data_get( cddp_data_id_t id, void* data, cddp_data_tick_t* tick );
 
 #endif /* _CDDP_PUBLIC_H_ */
