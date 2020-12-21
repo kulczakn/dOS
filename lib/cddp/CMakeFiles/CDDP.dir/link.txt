@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libCDDP.a CMakeFiles/CDDP.dir/src/cddp.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libCDDP.a
