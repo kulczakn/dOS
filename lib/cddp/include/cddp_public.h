@@ -123,10 +123,9 @@ typedef struct {
         cddp_data_tick_t tick;
         uint8_t data[ CDDP_DATA_SIZE - sizeof( cddp_data_id_t ) - sizeof( cddp_data_tick_t ) ];
     } data_buf[ CDDP_DATA_ID_COUNT ];
+    // assert size == 128
 
     bool data_en[ CDDP_DATA_ID_COUNT ];
-
-    // assert size == 128
 
 } cddp_cfg_t; // cddp interface
 

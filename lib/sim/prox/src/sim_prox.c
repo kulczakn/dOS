@@ -29,13 +29,13 @@ static int sim_prox_stop( void )
 }
 
 
-void sim_cddp_init()
+void sim_prox_init()
 {
     // clear static variables
     memset( &prox_cfg, 0, sizeof(prox_cfg_t) );
     prox_is_init = false;
 
-    // configure cddp interface
+    // configure prox interface
     prox_cfg.get   = sim_prox_get;
     prox_cfg.start = sim_prox_start;
     prox_cfg.stop  = sim_prox_stop;

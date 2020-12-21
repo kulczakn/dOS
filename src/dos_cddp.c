@@ -4,7 +4,7 @@
 
 #include "cddp_public.h"
 
-void dos_cddp_init()
+void dos_cddp_init( void )
 {
     // local constants
     #define _SIM_BUILD_ 1

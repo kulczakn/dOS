@@ -1,5 +1,5 @@
-# project Sim Prox (Simulated Proximity sensor)
-project(Prox)
+# project Sim PROX (Simulated Proximity sensor)
+project(sim_PROX)
 
 add_library(${PROJECT_NAME} src/sim_prox.c)
 

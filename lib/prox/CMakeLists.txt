@@ -1,5 +1,5 @@
-# project Prox (Proximity Sensor)
-project(Prox)
+# project PROX (Proximity Sensor)
+project(PROX)
 
 add_library(${PROJECT_NAME} src/prox.c)
 

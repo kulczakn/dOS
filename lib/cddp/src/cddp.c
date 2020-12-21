@@ -127,7 +127,7 @@ static void* cddp_task( void* arg )
     // local variables
 
     // connect to server
-    cddp_connect();
+    cddp_cfg.connect();
 
     // main loop
     while( true )

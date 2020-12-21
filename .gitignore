@@ -1,5 +1,11 @@
+# files
+dOS
+
+# directories
+CMakeFiles
+build
+
+# filetypes
 *.a
 *.o
-dOS
 *.cmake
-CMakeFiles

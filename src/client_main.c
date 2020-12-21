@@ -16,6 +16,10 @@
 /***** Project Includes *****/
 
 #include "cddp_public.h"
+#include "prox_public.h"
+
+#include "dos_cddp_public.h"
+#include "dos_prox_public.h"
 
 // constants
 
@@ -32,7 +36,6 @@ int main(int argc, char const *argv[])
 	struct timespec req;
 
 	// init variables
-
 	rc 		    = 1;
 	req.tv_sec  = 1;
 	req.tv_nsec = 150000000;
@@ -45,15 +48,20 @@ int main(int argc, char const *argv[])
 
 	// initialize hardware interfacing modules
 	dos_cddp_init();
+	dos_prox_init();
 
 	// initialize high level modules
 	cddp_init();
-	
+	prox_init();
 
+	// configure high level modules
 	cddp_data_enable( id );
 
+	// start high level module processing
 	cddp_start();
+	prox_start();
 	
+	// example
 	size_t i = 0;
 	while( rc )
 	{
@@ -65,7 +73,10 @@ int main(int argc, char const *argv[])
 			printf("Looped: %ld\n", i);
 	}
 
+	// stop high level module processing
 	cddp_stop();
+	prox_stop();
 
+	// exit
 	return 0;
 } 
