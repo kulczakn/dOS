@@ -17,6 +17,9 @@
 
 #include "cddp_public.h"
 
+// constants
+
+// main
 
 int main(int argc, char const *argv[]) 
 { 
@@ -40,9 +43,16 @@ int main(int argc, char const *argv[])
 		buf[ i ] = i;
 	}
 
-	// cddp client examples
+	// initialize hardware interfacing modules
+	dos_cddp_init();
+
+	// initialize high level modules
 	cddp_init();
-	cddp_data_on( 100 );
+	
+
+	cddp_data_enable( id );
+
+	cddp_start();
 	
 	size_t i = 0;
 	while( rc )
@@ -54,6 +64,8 @@ int main(int argc, char const *argv[])
 		if( i % 10 == 0 )
 			printf("Looped: %ld\n", i);
 	}
+
+	cddp_stop();
 
 	return 0;
 } 

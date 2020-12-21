@@ -41,22 +41,26 @@ class CDDPServer:
     def _get_handler(self):
 
         async def handler(reader, writer):
+
+            print("Handler")
             
             # local variables
             connection_status = 0
 
             while connection_status != -1:
 
+                print("Awaiting data...")
+
                 # read data
                 data = await self._read_data(reader, writer, 128)
-                data = struct.unpack("IQp", data)
+                data = struct.unpack("IxxxxQ112c", data)
 
                 # parse data
                 # check packet id
                 # parse data based on packet
                 print(f"id:   {data[0]}")
                 print(f"tick: {data[1]}")
-                print(f"data: {data[2]}")
+                print(f"data: {data[2]}\n")
 
                 # use data
 
@@ -73,6 +77,7 @@ class CDDPServer:
             # close session
             current_session.close(save_to_file = True)
         
+        print("Handler created\n")
         return handler
 
 
@@ -94,6 +99,8 @@ async def main():
     # initialize server
     # server = IPCServer("localhost", 8080, debug = True)
     server = CDDPServer("localhost", 8989, debug = True)
+
+    print("Server created\n")
 
     # start server
     await server.start()

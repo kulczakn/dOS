@@ -99,14 +99,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/CMakeFiles /Users/nathankulczak/Documents/GitHub/dOS//CMakeFiles/progress.marks
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/CMakeFiles /Users/nathankulczak/Documents/GitHub/dOS/lib/cddp//CMakeFiles/progress.marks
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/cddp/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/cddp/clean
 .PHONY : clean
 
 # The main clean target
@@ -116,71 +116,60 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/cddp/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/cddp/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named dOS
+# Convenience name for target.
+lib/cddp/CMakeFiles/CDDP.dir/rule:
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/cddp/CMakeFiles/CDDP.dir/rule
+.PHONY : lib/cddp/CMakeFiles/CDDP.dir/rule
 
-# Build rule for target.
-dOS: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dOS
-.PHONY : dOS
+# Convenience name for target.
+CDDP: lib/cddp/CMakeFiles/CDDP.dir/rule
 
-# fast build rule for target.
-dOS/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/dOS.dir/build.make CMakeFiles/dOS.dir/build
-.PHONY : dOS/fast
-
-#=============================================================================
-# Target rules for targets named CDDP
-
-# Build rule for target.
-CDDP: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CDDP
 .PHONY : CDDP
 
 # fast build rule for target.
 CDDP/fast:
-	$(MAKE) $(MAKESILENT) -f lib/cddp/CMakeFiles/CDDP.dir/build.make lib/cddp/CMakeFiles/CDDP.dir/build
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f lib/cddp/CMakeFiles/CDDP.dir/build.make lib/cddp/CMakeFiles/CDDP.dir/build
 .PHONY : CDDP/fast
 
-src/client_main.o: src/client_main.c.o
+src/cddp.o: src/cddp.c.o
 
-.PHONY : src/client_main.o
+.PHONY : src/cddp.o
 
 # target to build an object file
-src/client_main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/dOS.dir/build.make CMakeFiles/dOS.dir/src/client_main.c.o
-.PHONY : src/client_main.c.o
+src/cddp.c.o:
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f lib/cddp/CMakeFiles/CDDP.dir/build.make lib/cddp/CMakeFiles/CDDP.dir/src/cddp.c.o
+.PHONY : src/cddp.c.o
 
-src/client_main.i: src/client_main.c.i
+src/cddp.i: src/cddp.c.i
 
-.PHONY : src/client_main.i
+.PHONY : src/cddp.i
 
 # target to preprocess a source file
-src/client_main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/dOS.dir/build.make CMakeFiles/dOS.dir/src/client_main.c.i
-.PHONY : src/client_main.c.i
+src/cddp.c.i:
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f lib/cddp/CMakeFiles/CDDP.dir/build.make lib/cddp/CMakeFiles/CDDP.dir/src/cddp.c.i
+.PHONY : src/cddp.c.i
 
-src/client_main.s: src/client_main.c.s
+src/cddp.s: src/cddp.c.s
 
-.PHONY : src/client_main.s
+.PHONY : src/cddp.s
 
 # target to generate assembly for a file
-src/client_main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/dOS.dir/build.make CMakeFiles/dOS.dir/src/client_main.c.s
-.PHONY : src/client_main.c.s
+src/cddp.c.s:
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f lib/cddp/CMakeFiles/CDDP.dir/build.make lib/cddp/CMakeFiles/CDDP.dir/src/cddp.c.s
+.PHONY : src/cddp.c.s
 
 # Help Target
 help:
@@ -191,10 +180,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... CDDP"
-	@echo "... dOS"
-	@echo "... src/client_main.o"
-	@echo "... src/client_main.i"
-	@echo "... src/client_main.s"
+	@echo "... src/cddp.o"
+	@echo "... src/cddp.i"
+	@echo "... src/cddp.s"
 .PHONY : help
 
 
@@ -206,6 +194,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/nathankulczak/Documents/GitHub/dOS && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

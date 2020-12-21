@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/nathankulczak/Documents/GitHub/dOS/lib/cddp/src/cddp.c
+cddp_private.h
+/Users/nathankulczak/Documents/GitHub/dOS/lib/cddp/src/cddp_private.h
+
+lib/cddp/include/cddp_private.h
+cddp_public.h
+lib/cddp/include/cddp_public.h
+
+lib/cddp/include/cddp_public.h
+pthread.h
+-
+stdbool.h
+-
+stdint.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+time.h
+-
+unistd.h
+-
+arpa/inet.h
+-
+sys/socket.h
+-
+
