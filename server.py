@@ -49,7 +49,7 @@ class CDDPServer:
         self.port = port
 
         # initialize members
-        self.redis     = redis.Redis( host = "localhost", port = redis_port, db=0 )
+        # self.redis     = redis.Redis( host = "localhost", port = redis_port, db=0 )
         self.server    = None
         self.address   = None
         self.connected = False
@@ -186,7 +186,8 @@ class CDDPServer:
                 packet = self.input_queue.get()
 
                 # update local database
-                self.redis.set( packet["id"], ( packet["tick"], packet["data"] ) )
+                # self.redis.set( packet["id"], ( packet["tick"], packet["data"] ) )
+                self.data[ packet[ "id" ] ] = ( packet["tick"], packet["data"] )
 
                 # push data to worker output queue
                 

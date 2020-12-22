@@ -80,14 +80,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /mnt/c/prog/dOS && $(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/prog/dOS/CMakeFiles /mnt/c/prog/dOS/lib/sim/cddp/CMakeFiles/progress.marks
-	cd /mnt/c/prog/dOS && $(MAKE) -f CMakeFiles/Makefile2 lib/sim/cddp/all
+	cd /mnt/c/prog/dOS && $(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/prog/dOS/CMakeFiles /mnt/c/prog/dOS/lib/sim/prox/CMakeFiles/progress.marks
+	cd /mnt/c/prog/dOS && $(MAKE) -f CMakeFiles/Makefile2 lib/sim/prox/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/prog/dOS/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /mnt/c/prog/dOS && $(MAKE) -f CMakeFiles/Makefile2 lib/sim/cddp/clean
+	cd /mnt/c/prog/dOS && $(MAKE) -f CMakeFiles/Makefile2 lib/sim/prox/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,12 +97,12 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /mnt/c/prog/dOS && $(MAKE) -f CMakeFiles/Makefile2 lib/sim/cddp/preinstall
+	cd /mnt/c/prog/dOS && $(MAKE) -f CMakeFiles/Makefile2 lib/sim/prox/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /mnt/c/prog/dOS && $(MAKE) -f CMakeFiles/Makefile2 lib/sim/cddp/preinstall
+	cd /mnt/c/prog/dOS && $(MAKE) -f CMakeFiles/Makefile2 lib/sim/prox/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
@@ -111,46 +111,46 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-lib/sim/cddp/CMakeFiles/sim_CDDP.dir/rule:
-	cd /mnt/c/prog/dOS && $(MAKE) -f CMakeFiles/Makefile2 lib/sim/cddp/CMakeFiles/sim_CDDP.dir/rule
-.PHONY : lib/sim/cddp/CMakeFiles/sim_CDDP.dir/rule
+lib/sim/prox/CMakeFiles/sim_PROX.dir/rule:
+	cd /mnt/c/prog/dOS && $(MAKE) -f CMakeFiles/Makefile2 lib/sim/prox/CMakeFiles/sim_PROX.dir/rule
+.PHONY : lib/sim/prox/CMakeFiles/sim_PROX.dir/rule
 
 # Convenience name for target.
-sim_CDDP: lib/sim/cddp/CMakeFiles/sim_CDDP.dir/rule
+sim_PROX: lib/sim/prox/CMakeFiles/sim_PROX.dir/rule
 
-.PHONY : sim_CDDP
+.PHONY : sim_PROX
 
 # fast build rule for target.
-sim_CDDP/fast:
-	cd /mnt/c/prog/dOS && $(MAKE) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build
-.PHONY : sim_CDDP/fast
+sim_PROX/fast:
+	cd /mnt/c/prog/dOS && $(MAKE) -f lib/sim/prox/CMakeFiles/sim_PROX.dir/build.make lib/sim/prox/CMakeFiles/sim_PROX.dir/build
+.PHONY : sim_PROX/fast
 
-src/sim_cddp.o: src/sim_cddp.c.o
+src/sim_prox.o: src/sim_prox.c.o
 
-.PHONY : src/sim_cddp.o
+.PHONY : src/sim_prox.o
 
 # target to build an object file
-src/sim_cddp.c.o:
-	cd /mnt/c/prog/dOS && $(MAKE) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/src/sim_cddp.c.o
-.PHONY : src/sim_cddp.c.o
+src/sim_prox.c.o:
+	cd /mnt/c/prog/dOS && $(MAKE) -f lib/sim/prox/CMakeFiles/sim_PROX.dir/build.make lib/sim/prox/CMakeFiles/sim_PROX.dir/src/sim_prox.c.o
+.PHONY : src/sim_prox.c.o
 
-src/sim_cddp.i: src/sim_cddp.c.i
+src/sim_prox.i: src/sim_prox.c.i
 
-.PHONY : src/sim_cddp.i
+.PHONY : src/sim_prox.i
 
 # target to preprocess a source file
-src/sim_cddp.c.i:
-	cd /mnt/c/prog/dOS && $(MAKE) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/src/sim_cddp.c.i
-.PHONY : src/sim_cddp.c.i
+src/sim_prox.c.i:
+	cd /mnt/c/prog/dOS && $(MAKE) -f lib/sim/prox/CMakeFiles/sim_PROX.dir/build.make lib/sim/prox/CMakeFiles/sim_PROX.dir/src/sim_prox.c.i
+.PHONY : src/sim_prox.c.i
 
-src/sim_cddp.s: src/sim_cddp.c.s
+src/sim_prox.s: src/sim_prox.c.s
 
-.PHONY : src/sim_cddp.s
+.PHONY : src/sim_prox.s
 
 # target to generate assembly for a file
-src/sim_cddp.c.s:
-	cd /mnt/c/prog/dOS && $(MAKE) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/src/sim_cddp.c.s
-.PHONY : src/sim_cddp.c.s
+src/sim_prox.c.s:
+	cd /mnt/c/prog/dOS && $(MAKE) -f lib/sim/prox/CMakeFiles/sim_PROX.dir/build.make lib/sim/prox/CMakeFiles/sim_PROX.dir/src/sim_prox.c.s
+.PHONY : src/sim_prox.c.s
 
 # Help Target
 help:
@@ -160,10 +160,10 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... sim_CDDP"
-	@echo "... src/sim_cddp.o"
-	@echo "... src/sim_cddp.i"
-	@echo "... src/sim_cddp.s"
+	@echo "... sim_PROX"
+	@echo "... src/sim_prox.o"
+	@echo "... src/sim_prox.i"
+	@echo "... src/sim_prox.s"
 .PHONY : help
 
 

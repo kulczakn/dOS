@@ -12,6 +12,9 @@ add_executable(${PROJECT_NAME}
 
 # add library sources
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/cddp)
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/prox)
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sim/cddp)
+add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sim/prox)
 
 target_include_directories( ${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/include

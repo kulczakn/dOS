@@ -1,4 +1,4 @@
-#include "dos_cddp_private.h"
+#include "dos_cddp_public.h"
 
 #include "sim_cddp_public.h"
 
