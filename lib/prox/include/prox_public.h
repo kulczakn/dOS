@@ -15,9 +15,9 @@
 
 typedef struct {
 
-    int ( *get ) ( void* );                    // get most recent proximity sensory data
-    int ( *start ) ( void* ( *f ) ( void* ) ); // enable the prox monitoring in the snsr lib
-    int ( *stop  ) ( void );                   // disable the prox monitoring
+    int ( *get )   ( void* );   // get most recent proximity sensory data
+    int ( *start ) ( void );    // enable the prox monitoring in the snsr lib
+    int ( *stop  ) ( void );    // disable the prox monitoring
 
 } prox_cfg_t; // cddp interface
 

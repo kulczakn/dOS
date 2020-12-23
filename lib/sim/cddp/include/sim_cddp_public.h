@@ -17,15 +17,15 @@
 
 // CDDP constants
 
-#define CDDP_SIM_SERV_PORT  8989
-#define CDDP_SIM_SERV_ADDR  "127.0.0.1"
-#define CDDP_SIM_STACK_SIZE 4096
+#define SIM_CDDP_SERV_PORT  8989
+#define SIM_CDDP_SERV_ADDR  "127.0.0.1"
+#define SIM_CDDP_STACK_SIZE 4096
 
 // CDDP SIM types
 
 
 // public interface
 
-void sim_cddp_init();
+void sim_cddp_init( void );
 
 #endif /* _SIM_CDDP_PUBLIC_H_ */

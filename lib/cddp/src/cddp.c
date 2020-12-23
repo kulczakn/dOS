@@ -26,6 +26,12 @@ int cddp_init( void )
 }
 
 
+int cddp_start( void )
+{
+    return cddp_cfg.start( cddp_task );
+}
+
+
 int cddp_stop( void )
 {
     return cddp_cfg.stop();

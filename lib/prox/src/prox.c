@@ -24,6 +24,12 @@ int prox_init( void )
 }
 
 
+int prox_start( void )
+{
+    return prox_cfg.start();
+}
+
+
 int prox_stop( void )
 {
     return prox_cfg.stop();

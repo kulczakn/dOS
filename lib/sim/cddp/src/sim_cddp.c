@@ -1,4 +1,4 @@
-#include "cddp_private.h"
+#include "sim_cddp_private.h"
 
 // static variables
 
@@ -21,12 +21,15 @@ static cddp_data_tick_t sim_cddp_tick()
     {
         s_tick = (cddp_data_tick_t)time(NULL) - s_tick_init;
     }
+
     return s_tick;
 }
 
 
 static int sim_cddp_connect( void )
 {
+    printf("\nSim CDDP connecting...\n");
+
     // local variables
     struct sockaddr_in serv_addr = { 0 };
 
@@ -34,47 +37,56 @@ static int sim_cddp_connect( void )
 	if( (s_conn = socket(AF_INET, SOCK_STREAM, 0) ) < 0) 
 	{ 
         printf("Error creating socket\n");
-		return; // TODO
+		return -1; // TODO
 	} 
 
 	serv_addr.sin_family = AF_INET; 
-	serv_addr.sin_port = htons( CDDP_SERV_PORT ); 
+	serv_addr.sin_port = htons( SIM_CDDP_SERV_PORT ); 
 	
 	// Convert IPv4 and IPv6 addresses from text to binary form 
-	if(inet_pton(AF_INET, CDDP_SERV_ADDR, &serv_addr.sin_addr) <= 0) 
+	if( inet_pton( AF_INET, SIM_CDDP_SERV_ADDR, &serv_addr.sin_addr ) <= 0 ) 
 	{
         printf("Error converting address\n");
-		return; // TODO 
+		return -1; // TODO 
 	} 
 
-	if( connect(s_conn, (struct sockaddr *)&serv_addr, sizeof(serv_addr) ) < 0) 
+	if( connect( s_conn, (struct sockaddr *)&serv_addr, sizeof(serv_addr) ) < 0) 
 	{
         printf("Error connecting to server\n");
-		return; // TODO
+		return -1; // TODO
 	} 
 
     // set static variables
-    s_tick_init = (cddp_data_tick_t)time(NULL);
+    s_tick_init = (cddp_data_tick_t)time( NULL );
+
+    printf("Sim CDDP connected.\n");
+
+    return 1;
 }
 
 static int sim_cddp_send( void* data, size_t size )
 {
     send(s_conn, data, size, 0);
-    printf("")
+    // printf("")
+    return 1;
 }
 
 
 static int sim_cddp_start ( void* ( *f ) ( void* ) )
 {   
+    printf("\nSim CDDP starting...\n");
+
     // local variables
     int rc = 0;
 
     // start task
 
-    rc = pthread_attr_init(&s_cddp_thread_attr);
-    rc = pthread_attr_setstacksize(&s_cddp_thread_attr, CDDP_STACK_SIZE);
+    rc = pthread_attr_init( &s_cddp_thread_attr );
+    rc = pthread_attr_setstacksize( &s_cddp_thread_attr, SIM_CDDP_STACK_SIZE );
 
-    rc = pthread_create(&s_cddp_thread_id, &s_cddp_thread_attr, f, NULL);
+    rc = pthread_create( &s_cddp_thread_id, &s_cddp_thread_attr, f, NULL );
+
+    printf("Sim CDDP started.\n");
 
     return rc;
 }
@@ -92,6 +104,9 @@ static int sim_cddp_stop()
 
 void sim_cddp_init()
 {
+    printf("\nSim CDDP initializing...\n");
+
+
     // clear static variables
     s_conn = 0;
     s_tick = 0;
@@ -108,4 +123,6 @@ void sim_cddp_init()
 
     // flag simulated hardware interface as initialized
     cddp_is_init = true;
+
+    printf("Sim CDDP initialized.\n");
 }

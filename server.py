@@ -1,36 +1,36 @@
 
-import functools
-import pprint
-import redis
 import socket
 import struct
 import time
 import threading
-import Queue
+import uvicorn
+
 # import sqlite3 eventually use sqlite3 or more robust data storage for local data caches
 
 from enum import Enum
+from fastapi import FastAPI
+from queue import Queue
 
 # constants
 
-class CDDPID(Enum):
-    CDDP_DATA_ID_FIRST = 0,
+# class CDDPID(Enum):
+#     CDDP_DATA_ID_FIRST = 0,
 
-    CDDP_SYS_DATA_ID_FIRST = CDDP_DATA_ID_FIRST,
-    CDDP_SYS_DATA_ID_LAST  = 99,
+#     CDDP_SYS_DATA_ID_FIRST = CDDP_DATA_ID_FIRST,
+#     CDDP_SYS_DATA_ID_LAST  = 99,
 
-    CDDP_PRJ_DATA_ID_FIRST = 100,
-    CDDP_PRJ_DATA_ID_LAST  = 199,
+#     CDDP_PRJ_DATA_ID_FIRST = 100,
+#     CDDP_PRJ_DATA_ID_LAST  = 199,
 
-    CDDP_SIM_DATA_ID_FIRST = 200,
-    CDDP_SIM_DATA_ID_LAST  = 299,
+#     CDDP_SIM_DATA_ID_FIRST = 200,
+#     CDDP_SIM_DATA_ID_LAST  = 299,
 
-    CDDP_DATA_ID_LAST,
+#     CDDP_DATA_ID_LAST,
 
-    CDDP_SYS_DATA_ID_COUNT = CDDP_SYS_DATA_ID_LAST - CDDP_SYS_DATA_ID_FIRST + 1,
-    CDDP_PRJ_DATA_ID_COUNT = CDDP_PRJ_DATA_ID_LAST - CDDP_PRJ_DATA_ID_FIRST + 1,
-    CDDP_SIM_DATA_ID_COUNT = CDDP_SIM_DATA_ID_LAST - CDDP_SIM_DATA_ID_FIRST + 1,
-    CDDP_DATA_ID_COUNT = CDDP_DATA_ID_LAST - CDDP_DATA_ID_FIRST
+#     CDDP_SYS_DATA_ID_COUNT = CDDP_SYS_DATA_ID_LAST - CDDP_SYS_DATA_ID_FIRST + 1,
+#     CDDP_PRJ_DATA_ID_COUNT = CDDP_PRJ_DATA_ID_LAST - CDDP_PRJ_DATA_ID_FIRST + 1,
+#     CDDP_SIM_DATA_ID_COUNT = CDDP_SIM_DATA_ID_LAST - CDDP_SIM_DATA_ID_FIRST + 1,
+#     CDDP_DATA_ID_COUNT = CDDP_DATA_ID_LAST - CDDP_DATA_ID_FIRST
 
 # import matplotlib.pyplot as plt
 
@@ -64,16 +64,14 @@ class CDDPServer:
         self.queue_workers_pool = []
         self.conn_workers_pool  = []
 
-        self.input_queue  = Queue.Queue()
-        self.output_queue = Queue.Queue()
+        self.input_queue  = Queue()
+        self.output_queue = Queue()
+        self.log_queue    = Queue()
 
         # local data
         self.data = {
             # data id -> data
         }
-
-
-
 
 
     # public methods
@@ -82,29 +80,50 @@ class CDDPServer:
         # open socket and start server thread
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.bind( ( self.address, self.port ) )
+        self.socket.bind( ( self.host, self.port ) )
+
+        # create threads
+
+        print("Creating server thread...")
+        self.server_thread = threading.Thread( target = self._server_thread )
+        print("Server thread created\n")
+
+        print(f"Creating {self.conn_workers_count} connection workers...")
+        for i in range(self.conn_workers_count):
+            conn_worker = threading.Thread( target = self._conn_worker )
+            self.conn_workers_pool.append( conn_worker )
+        print(f"{self.conn_workers_count} conn workers created\n")
+
+        print(f"Creating {self.queue_workers_count} connection workers...")
+        for i in range(self.queue_workers_count):
+            queue_worker = threading.Thread( target = self._queue_worker )
+            self.queue_workers_pool.append( queue_worker )
+        print(f"{self.queue_workers_count} conn workers created\n")
 
         # start threads
         
         print("Starting server thread...")
-        self.server_thread = threading.Thread( target = self._server_thread )
+        self.server_thread.start()
         print("Server thread started\n")
 
-
         print(f"Starting {self.conn_workers_count} connection workers...")
-        for i in range(self.conn_workers_count):
-            self.conn_workers_pool.append(
-                threading.Thread( self._conn_worker )
-            )
+        for conn_worker in self.conn_workers_pool:
+            conn_worker.start()
         print(f"{self.conn_workers_count} conn workers started\n")
 
-
         print(f"Starting {self.queue_workers_count} connection workers...")
-        for i in range(self.queue_workers_count):
-            self.queue_workers_pool.append(
-                threading.Thread( self._queue_worker )
-            )
+        for queue_worker in self.queue_workers_pool:
+            queue_worker.start()
         print(f"{self.queue_workers_count} conn workers started\n")
+
+    
+    def get_active( self ):
+        # return list of active data ids
+        pass
+
+    def get_data( self, id ):
+        # return data with given id
+        pass
         
 
     # private methods
@@ -113,9 +132,13 @@ class CDDPServer:
         # handle new connections
 
         while True:
+            print("Server thread waiting for connection")
+
             # accept new connection
             self.socket.listen( 1 )
             conn, addr = self.socket.accept()
+
+            print(f"Connection accepted from {addr}")
 
             # add to connection pool
             self.conn_pool.append( ( conn, addr ) )
@@ -130,15 +153,23 @@ class CDDPServer:
         while True:
 
             # for each connection in connection pool
-            for idx, conn, addr in enumerate(self.conn_pool):
+            for idx, ( conn, addr ) in enumerate(self.conn_pool):
                 data = conn.recv( 128 )
-                if not data continue
-                else conn_alive = True
+                if not data:
+                    continue
+                else:
+                    conn_alive = True
 
                 # while there's good data and the connection is alive
                 while data and conn_alive:
                     # process data
-                    ddata = struct.unpack("IQ112s")
+                    ddata = struct.unpack( "IQ112s", data )
+
+                    # TODO: LOG
+
+                    self.log_queue.put( ddata )
+
+                    # END TODO
 
                     data_id = int(ddata[ 0 ])
 
@@ -190,17 +221,41 @@ class CDDPServer:
                 self.data[ packet[ "id" ] ] = ( packet["tick"], packet["data"] )
 
                 # push data to worker output queue
-                
+
 
 
 def main():
+
+    # local variables
+    cddp_log = []
     
-    server = CDDPServer(
+    # create servers
+    web_server = FastAPI()
+    cddp_server = CDDPServer(
         "localhost", 
         8989
     )
 
-    server.start()
+    # configure servers
+    @web_server.get("/")
+    async def root():
+        return "Hello World"
+
+    @web_server.get("/log")
+    async def get_cddp_log():
+
+        # read cddp log queue into cddp log data
+        while not cddp_server.log_queue.empty():
+            cddp_log.append( cddp_server.log_queue.get() )
+
+        # return cddp log data
+        return {
+            "log": cddp_log
+        }
+
+    # start servers
+    cddp_server.start()
+    uvicorn.run(web_server, host="0.0.0.0", port=8000)
 
     while True:
         pass

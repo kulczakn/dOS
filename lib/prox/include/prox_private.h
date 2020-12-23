@@ -6,6 +6,6 @@
 // project side variables
 
 extern prox_cfg_t prox_cfg;
-extern bool       prox_is_init = false;
+extern bool       prox_is_init;
 
 #endif /* _PROX_PRIVATE_H_ */
