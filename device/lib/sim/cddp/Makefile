@@ -67,10 +67,10 @@ RM = /Applications/CMake.app/Contents/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/nathankulczak/Documents/GitHub/dOS
+CMAKE_SOURCE_DIR = /Users/nathankulczak/Documents/GitHub/dOS/device
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/nathankulczak/Documents/GitHub/dOS
+CMAKE_BINARY_DIR = /Users/nathankulczak/Documents/GitHub/dOS/device
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -99,14 +99,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/CMakeFiles /Users/nathankulczak/Documents/GitHub/dOS/lib/sim/cddp//CMakeFiles/progress.marks
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/sim/cddp/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/CMakeFiles 0
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/device/CMakeFiles /Users/nathankulczak/Documents/GitHub/dOS/device/lib/sim/cddp//CMakeFiles/progress.marks
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/sim/cddp/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/device/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/sim/cddp/clean
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/sim/cddp/clean
 .PHONY : clean
 
 # The main clean target
@@ -116,22 +116,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/sim/cddp/preinstall
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/sim/cddp/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/sim/cddp/preinstall
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/sim/cddp/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 lib/sim/cddp/CMakeFiles/sim_CDDP.dir/rule:
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/sim/cddp/CMakeFiles/sim_CDDP.dir/rule
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lib/sim/cddp/CMakeFiles/sim_CDDP.dir/rule
 .PHONY : lib/sim/cddp/CMakeFiles/sim_CDDP.dir/rule
 
 # Convenience name for target.
@@ -141,7 +141,7 @@ sim_CDDP: lib/sim/cddp/CMakeFiles/sim_CDDP.dir/rule
 
 # fast build rule for target.
 sim_CDDP/fast:
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(MAKE) $(MAKESILENT) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build
 .PHONY : sim_CDDP/fast
 
 src/sim_cddp.o: src/sim_cddp.c.o
@@ -150,7 +150,7 @@ src/sim_cddp.o: src/sim_cddp.c.o
 
 # target to build an object file
 src/sim_cddp.c.o:
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/src/sim_cddp.c.o
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(MAKE) $(MAKESILENT) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/src/sim_cddp.c.o
 .PHONY : src/sim_cddp.c.o
 
 src/sim_cddp.i: src/sim_cddp.c.i
@@ -159,7 +159,7 @@ src/sim_cddp.i: src/sim_cddp.c.i
 
 # target to preprocess a source file
 src/sim_cddp.c.i:
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/src/sim_cddp.c.i
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(MAKE) $(MAKESILENT) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/src/sim_cddp.c.i
 .PHONY : src/sim_cddp.c.i
 
 src/sim_cddp.s: src/sim_cddp.c.s
@@ -168,7 +168,7 @@ src/sim_cddp.s: src/sim_cddp.c.s
 
 # target to generate assembly for a file
 src/sim_cddp.c.s:
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(MAKE) $(MAKESILENT) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/src/sim_cddp.c.s
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(MAKE) $(MAKESILENT) -f lib/sim/cddp/CMakeFiles/sim_CDDP.dir/build.make lib/sim/cddp/CMakeFiles/sim_CDDP.dir/src/sim_cddp.c.s
 .PHONY : src/sim_cddp.c.s
 
 # Help Target
@@ -194,6 +194,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/nathankulczak/Documents/GitHub/dOS && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /Users/nathankulczak/Documents/GitHub/dOS/device && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

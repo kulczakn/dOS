@@ -122,10 +122,13 @@ typedef struct {
         cddp_data_id_t id;
         cddp_data_tick_t tick;
         uint8_t data[ CDDP_DATA_SIZE - sizeof( cddp_data_id_t ) - sizeof( cddp_data_tick_t ) ];
-    } data_buf[ CDDP_DATA_ID_COUNT ];
-    // assert size == 128
+    } data_buf[ CDDP_DATA_ID_COUNT ];           // buffered data for each data id
+    // assert size == 128   
 
-    bool data_en[ CDDP_DATA_ID_COUNT ];
+    bool data_en[ CDDP_DATA_ID_COUNT ];         // if data id is enabled
+
+    // state info   
+    bool connected;                             // if the low level driver has connected
 
 } cddp_cfg_t; // cddp interface
 

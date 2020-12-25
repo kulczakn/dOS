@@ -21,6 +21,8 @@ int cddp_init( void )
     }
 
     // clear flags
+
+    s_connected = false;
     
     return 1;
 }

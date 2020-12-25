@@ -67,10 +67,10 @@ RM = /Applications/CMake.app/Contents/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/nathankulczak/Documents/GitHub/dOS
+CMAKE_SOURCE_DIR = /Users/nathankulczak/Documents/GitHub/dOS/device
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/nathankulczak/Documents/GitHub/dOS
+CMAKE_BINARY_DIR = /Users/nathankulczak/Documents/GitHub/dOS/device
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -99,9 +99,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/CMakeFiles /Users/nathankulczak/Documents/GitHub/dOS//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/device/CMakeFiles /Users/nathankulczak/Documents/GitHub/dOS/device//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nathankulczak/Documents/GitHub/dOS/device/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

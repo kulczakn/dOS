@@ -13,26 +13,6 @@ from queue import Queue
 
 # constants
 
-# class CDDPID(Enum):
-#     CDDP_DATA_ID_FIRST = 0,
-
-#     CDDP_SYS_DATA_ID_FIRST = CDDP_DATA_ID_FIRST,
-#     CDDP_SYS_DATA_ID_LAST  = 99,
-
-#     CDDP_PRJ_DATA_ID_FIRST = 100,
-#     CDDP_PRJ_DATA_ID_LAST  = 199,
-
-#     CDDP_SIM_DATA_ID_FIRST = 200,
-#     CDDP_SIM_DATA_ID_LAST  = 299,
-
-#     CDDP_DATA_ID_LAST,
-
-#     CDDP_SYS_DATA_ID_COUNT = CDDP_SYS_DATA_ID_LAST - CDDP_SYS_DATA_ID_FIRST + 1,
-#     CDDP_PRJ_DATA_ID_COUNT = CDDP_PRJ_DATA_ID_LAST - CDDP_PRJ_DATA_ID_FIRST + 1,
-#     CDDP_SIM_DATA_ID_COUNT = CDDP_SIM_DATA_ID_LAST - CDDP_SIM_DATA_ID_FIRST + 1,
-#     CDDP_DATA_ID_COUNT = CDDP_DATA_ID_LAST - CDDP_DATA_ID_FIRST
-
-# import matplotlib.pyplot as plt
 
 class CDDPData:
 
@@ -120,6 +100,7 @@ class CDDPServer:
     def get_active( self ):
         # return list of active data ids
         pass
+
 
     def get_data( self, id ):
         # return data with given id
