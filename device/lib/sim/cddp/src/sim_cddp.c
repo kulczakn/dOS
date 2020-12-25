@@ -14,7 +14,6 @@ static pthread_t        s_cddp_thread_id;
 // cddp project side variables
 
 cddp_cfg_t   cddp_cfg;
-bool         cddp_is_init;
 
 /**
  *  @brief  If the tick has been initialized, sim_cddp_tick will update the update and return the current tick.
@@ -23,12 +22,19 @@ bool         cddp_is_init;
  **/
 static cddp_data_tick_t sim_cddp_tick()
 {
+    // local variables
+    cddp_data_tick_t ret = 0;
+
     if( s_tick_init )
     {
+        // if tick is initialized, update tick
         s_tick = (cddp_data_tick_t)time(NULL) - s_tick_init;
+
+        ret = s_tick;
     }
 
-    return s_tick;
+    // return current tick or 0
+    return ret;
 }
 
 
@@ -113,8 +119,8 @@ static int sim_cddp_connect( void )
 /**
  * @brief   sim_cddp_send sends a data update across the socket interface
  * 
- * @param[in]   data  data to be sent
- * @param[in]   size  size of the data
+ * @param   data  data to be sent
+ * @param   size  size of the data
  * @return int 
  */
 static int sim_cddp_send( void* data, size_t size )
@@ -128,7 +134,7 @@ static int sim_cddp_send( void* data, size_t size )
  *  @brief  sim_cddp_start starts the module task.
  *          After this function has been executed, the device code will be able to access the cddp data interface.
  *          
- *   @param[in] f  Function that will be executed as the module task
+ *   @param f  Function that will be executed as the module task
  **/
 static int sim_cddp_start ( void* ( *f ) ( void* ) )
 {   
@@ -137,20 +143,23 @@ static int sim_cddp_start ( void* ( *f ) ( void* ) )
     // local variables
     int rc = 0;
 
-    // validate module state
-    // if ( not connected ) 
-    // {
-    //      
-    // }
+    if( !s_connected )
+    {
+        rc = -1;
+    }
+    else
+    {
+        // if connected, start task
 
-    // start task
+        rc = pthread_attr_init( &s_cddp_thread_attr );
+        rc = pthread_attr_setstacksize( &s_cddp_thread_attr, SIM_CDDP_STACK_SIZE );
 
-    rc = pthread_attr_init( &s_cddp_thread_attr );
-    rc = pthread_attr_setstacksize( &s_cddp_thread_attr, SIM_CDDP_STACK_SIZE );
+        rc = pthread_create( &s_cddp_thread_id, &s_cddp_thread_attr, f, NULL );
 
-    rc = pthread_create( &s_cddp_thread_id, &s_cddp_thread_attr, f, NULL );
+        rc = 1;
 
-    printf("Sim CDDP started.\n");
+        printf("Sim CDDP started.\n");
+    }
 
     return rc;
 }
@@ -161,6 +170,7 @@ static int sim_cddp_start ( void* ( *f ) ( void* ) )
  **/
 static int sim_cddp_stop()
 {
+    // local variables
     int rc = 0;
     
     rc = pthread_join(s_cddp_thread_id, NULL);
@@ -187,12 +197,16 @@ void sim_cddp_init()
     // configure cddp interface
     cddp_cfg.connect = &sim_cddp_connect;
     cddp_cfg.send    = &sim_cddp_send;
-    cddp_cfg.tick    = &sim_cddp_tick;
+    cddp_cfg.tick    = &sim_cddp_tick;  // helper?
     cddp_cfg.start   = &sim_cddp_start;
     cddp_cfg.stop    = &sim_cddp_stop;
 
+    // configure cddp helper functions
+    cddp_cfg.initialized = &sim_cddp_initialized;
+    cddp_cfg.connected   = &sim_cddp_connected;
+
     // flag simulated hardware interface as initialized
-    cddp_is_init = true;
+    s_init = true;
 
     printf("Sim CDDP initialized.\n");
 }

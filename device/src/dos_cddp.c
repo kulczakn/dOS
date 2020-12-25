@@ -4,16 +4,16 @@
 
 #include "cddp_public.h"
 
+/**
+ * @brief   dos_cddp_init initializes the cddp project side module by calling the hardware or simulated cddp interface indicated by the precompiler flags
+ */
 void dos_cddp_init( void )
 {
-    // local constants
-    #define _SIM_BUILD_ 1
-
     // local variables
 
     // init low level driver
 
-    #ifdef _SIM_BUILD_
+    #ifdef _CMAKE_SIM_BUILD_
     // init simulator driver
 
     sim_cddp_init();
@@ -22,8 +22,4 @@ void dos_cddp_init( void )
     // init esp32 hardware driver
 
     #endif
-
-    // clean up
-
-    #undef _SIM_BUILD_
 }

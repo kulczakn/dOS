@@ -25,6 +25,13 @@
 
 // main
 
+/**
+ * @brief 	Entry point for project side device logic
+ * 
+ * @param 	argc 
+ * @param 	argv 
+ * @return 	int 
+ */
 int main(int argc, char const *argv[]) 
 { 
 	// local variables

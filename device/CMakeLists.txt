@@ -16,6 +16,9 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/lib/prox)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sim/cddp)
 add_subdirectory(${PROJECT_SOURCE_DIR}/lib/sim/prox)
 
+# set project cmake precompiler flags
+add_compile_definitions(_CMAKE_SIM_BUILD_=1)
+
 target_include_directories( ${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/include
 

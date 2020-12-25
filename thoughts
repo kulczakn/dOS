@@ -1,3 +1,13 @@
+
+--- RULES ---
+
+Library Integration Rules
+- all global shared data must be allocated project side
+    - library does not know project data reqs
+    - high level library should not be concerned with data allocation
+- all global shared variables must be 
+
+
 -------------------NEWEST APPROACH - SYNCHRONIZED OS---------------
 
 Name: synOS

@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**"
             ],
-            "defines": [],
+            "defines": [ "_SIM_BUILD_=1" ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
             "cppStandard": "gnu++14",

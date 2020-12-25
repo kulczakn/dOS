@@ -118,19 +118,18 @@ typedef struct {
     int ( *start ) ( void* ( *f ) ( void* ) ); // start the cddp processing task
     int ( *stop  ) ( void );                   // join with the cddp task
 
-    struct {
-        cddp_data_id_t id;
-        cddp_data_tick_t tick;
-        uint8_t data[ CDDP_DATA_SIZE - sizeof( cddp_data_id_t ) - sizeof( cddp_data_tick_t ) ];
-    } data_buf[ CDDP_DATA_ID_COUNT ];           // buffered data for each data id
-    // assert size == 128   
-
-    bool data_en[ CDDP_DATA_ID_COUNT ];         // if data id is enabled
-
-    // state info   
-    bool connected;                             // if the low level driver has connected
+    bool ( *initialized  ) ( void );           // get initialization status
+    bool ( *connected    ) ( void );           // get connected status
 
 } cddp_cfg_t; // cddp interface
+
+typedef struct {
+    bool             enabled;
+    cddp_data_id_t   id;
+    cddp_data_tick_t tick;
+    uint8_t data[ CDDP_DATA_SIZE - sizeof( cddp_data_id_t ) - sizeof( cddp_data_tick_t ) ];
+} cddp_data_buf_t;
+// assert size == CDDP_DATA_SIZE ? - maybe want to store extra data on data other the data synced w/ other device
 
 
 // public interface
