@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**"
             ],
-            "defines": [ "_SIM_BUILD_=1" ],
+            "defines": [ ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
             "cppStandard": "gnu++14",
@@ -17,12 +17,26 @@
             "includePath": [
                 "${workspaceFolder}/**"
             ],
-            "defines": [],
+            "defines": [ ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c17",
             "cppStandard": "gnu++14",
-            "intelliSenseMode": "gcc-x64"
-        }
+            "intelliSenseMode": "gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        } 
+        //,
+        // {
+        //     "name": "Win32",
+        //     "includePath": [
+        //         "${workspaceFolder}/**"
+        //     ],
+        //     "defines": [ ],
+        //     "compilerPath": "/usr/bin/gcc",
+        //     "cStandard": "c17",
+        //     "cppStandard": "gnu++14",
+        //     "intelliSenseMode": "gcc-x64",
+        //     "configurationProvider": "ms-vscode.cmake-tools"
+        // }
     ],
     "version": 4
 }

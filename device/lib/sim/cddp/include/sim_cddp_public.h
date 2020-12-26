@@ -26,6 +26,6 @@
 
 // public interface
 
-void sim_cddp_init( void );
+int sim_cddp_init( cddp_cfg_t* cddp_cfg );
 
 #endif /* _SIM_CDDP_PUBLIC_H_ */

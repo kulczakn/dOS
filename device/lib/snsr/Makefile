@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /mnt/c/prog/dOS/device
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -78,16 +67,27 @@ rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
+
 # The main all target
 all: cmake_check_build_system
-	cd /mnt/c/prog/dOS/device && $(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/prog/dOS/device/CMakeFiles /mnt/c/prog/dOS/device/lib/cddp/CMakeFiles/progress.marks
-	cd /mnt/c/prog/dOS/device && $(MAKE) -f CMakeFiles/Makefile2 lib/cddp/all
+	cd /mnt/c/prog/dOS/device && $(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/prog/dOS/device/CMakeFiles /mnt/c/prog/dOS/device/lib/snsr/CMakeFiles/progress.marks
+	cd /mnt/c/prog/dOS/device && $(MAKE) -f CMakeFiles/Makefile2 lib/snsr/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/prog/dOS/device/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /mnt/c/prog/dOS/device && $(MAKE) -f CMakeFiles/Makefile2 lib/cddp/clean
+	cd /mnt/c/prog/dOS/device && $(MAKE) -f CMakeFiles/Makefile2 lib/snsr/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,12 +97,12 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /mnt/c/prog/dOS/device && $(MAKE) -f CMakeFiles/Makefile2 lib/cddp/preinstall
+	cd /mnt/c/prog/dOS/device && $(MAKE) -f CMakeFiles/Makefile2 lib/snsr/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /mnt/c/prog/dOS/device && $(MAKE) -f CMakeFiles/Makefile2 lib/cddp/preinstall
+	cd /mnt/c/prog/dOS/device && $(MAKE) -f CMakeFiles/Makefile2 lib/snsr/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
@@ -111,46 +111,46 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-lib/cddp/CMakeFiles/CDDP.dir/rule:
-	cd /mnt/c/prog/dOS/device && $(MAKE) -f CMakeFiles/Makefile2 lib/cddp/CMakeFiles/CDDP.dir/rule
-.PHONY : lib/cddp/CMakeFiles/CDDP.dir/rule
+lib/snsr/CMakeFiles/SNSR.dir/rule:
+	cd /mnt/c/prog/dOS/device && $(MAKE) -f CMakeFiles/Makefile2 lib/snsr/CMakeFiles/SNSR.dir/rule
+.PHONY : lib/snsr/CMakeFiles/SNSR.dir/rule
 
 # Convenience name for target.
-CDDP: lib/cddp/CMakeFiles/CDDP.dir/rule
+SNSR: lib/snsr/CMakeFiles/SNSR.dir/rule
 
-.PHONY : CDDP
+.PHONY : SNSR
 
 # fast build rule for target.
-CDDP/fast:
-	cd /mnt/c/prog/dOS/device && $(MAKE) -f lib/cddp/CMakeFiles/CDDP.dir/build.make lib/cddp/CMakeFiles/CDDP.dir/build
-.PHONY : CDDP/fast
+SNSR/fast:
+	cd /mnt/c/prog/dOS/device && $(MAKE) -f lib/snsr/CMakeFiles/SNSR.dir/build.make lib/snsr/CMakeFiles/SNSR.dir/build
+.PHONY : SNSR/fast
 
-src/cddp.o: src/cddp.c.o
+src/snsr.o: src/snsr.c.o
 
-.PHONY : src/cddp.o
+.PHONY : src/snsr.o
 
 # target to build an object file
-src/cddp.c.o:
-	cd /mnt/c/prog/dOS/device && $(MAKE) -f lib/cddp/CMakeFiles/CDDP.dir/build.make lib/cddp/CMakeFiles/CDDP.dir/src/cddp.c.o
-.PHONY : src/cddp.c.o
+src/snsr.c.o:
+	cd /mnt/c/prog/dOS/device && $(MAKE) -f lib/snsr/CMakeFiles/SNSR.dir/build.make lib/snsr/CMakeFiles/SNSR.dir/src/snsr.c.o
+.PHONY : src/snsr.c.o
 
-src/cddp.i: src/cddp.c.i
+src/snsr.i: src/snsr.c.i
 
-.PHONY : src/cddp.i
+.PHONY : src/snsr.i
 
 # target to preprocess a source file
-src/cddp.c.i:
-	cd /mnt/c/prog/dOS/device && $(MAKE) -f lib/cddp/CMakeFiles/CDDP.dir/build.make lib/cddp/CMakeFiles/CDDP.dir/src/cddp.c.i
-.PHONY : src/cddp.c.i
+src/snsr.c.i:
+	cd /mnt/c/prog/dOS/device && $(MAKE) -f lib/snsr/CMakeFiles/SNSR.dir/build.make lib/snsr/CMakeFiles/SNSR.dir/src/snsr.c.i
+.PHONY : src/snsr.c.i
 
-src/cddp.s: src/cddp.c.s
+src/snsr.s: src/snsr.c.s
 
-.PHONY : src/cddp.s
+.PHONY : src/snsr.s
 
 # target to generate assembly for a file
-src/cddp.c.s:
-	cd /mnt/c/prog/dOS/device && $(MAKE) -f lib/cddp/CMakeFiles/CDDP.dir/build.make lib/cddp/CMakeFiles/CDDP.dir/src/cddp.c.s
-.PHONY : src/cddp.c.s
+src/snsr.c.s:
+	cd /mnt/c/prog/dOS/device && $(MAKE) -f lib/snsr/CMakeFiles/SNSR.dir/build.make lib/snsr/CMakeFiles/SNSR.dir/src/snsr.c.s
+.PHONY : src/snsr.c.s
 
 # Help Target
 help:
@@ -158,12 +158,12 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... CDDP"
-	@echo "... src/cddp.o"
-	@echo "... src/cddp.i"
-	@echo "... src/cddp.s"
+	@echo "... edit_cache"
+	@echo "... SNSR"
+	@echo "... src/snsr.o"
+	@echo "... src/snsr.i"
+	@echo "... src/snsr.s"
 .PHONY : help
 
 

@@ -15,11 +15,12 @@
 
 // CDDP constants
 
-#define CDDP_DATA_SIZE  128
+#define CDDP_DATA_SIZE  64
 
 // CDDP types
 
-typedef enum {
+typedef enum 
+{
 
     CDDP_DATA_ID_FIRST = 0,
 
@@ -72,7 +73,8 @@ typedef enum {
 
 
 // monitor display formats
-typedef enum {
+typedef enum 
+{
     CDDP_MNTR_FRMT_FIRST = 0,
 
     CDDP_MNTR_FRMT_RAW = CDDP_MNTR_FRMT_FIRST,
@@ -101,7 +103,8 @@ typedef enum {
 typedef uint64_t cddp_data_tick_t;
 
 // Sensors for logging and display
-typedef enum {
+typedef enum 
+{
     CDDP_SNSR_FIRST = 0,
 
     CDDP_SNSR_TEST,
@@ -111,19 +114,24 @@ typedef enum {
 } cddp_snsr_t;
 
 
-typedef struct {
-    int ( *connect ) ( void );                 // open packet stream connection
-    int ( *send    ) ( void*, size_t );        // send a packet
-    uint64_t ( *tick ) ( void );               // get current tick
-    int ( *start ) ( void* ( *f ) ( void* ) ); // start the cddp processing task
-    int ( *stop  ) ( void );                   // join with the cddp task
+typedef struct 
+{
+    int ( *connect ) ( void );                  // open packet stream connection
+    int ( *read    ) ( void*, size_t, size_t* );// read data update
+    int ( *send    ) ( void*, size_t );         // send data update
+    uint64_t ( *tick ) ( void );                // get current tick
+    int ( *start ) ( void* ( *f ) ( void* ) );  // start the cddp processing task
+    int ( *stop  ) ( void );                    // join with the cddp task
 
-    bool ( *initialized  ) ( void );           // get initialization status
-    bool ( *connected    ) ( void );           // get connected status
+    bool ( *initialized  ) ( void );            // get initialization status
+    bool ( *connected    ) ( void );            // get connected status
+    bool ( *started      ) ( void );            // get task started status
 
 } cddp_cfg_t; // cddp interface
 
-typedef struct {
+
+typedef struct 
+{
     bool             enabled;
     cddp_data_id_t   id;
     cddp_data_tick_t tick;
@@ -134,14 +142,14 @@ typedef struct {
 
 // public interface
 
-int cddp_init( void );
+int cddp_init( cddp_cfg_t* cfg, cddp_data_buf_t* buf, size_t buf_size );
 int cddp_start( void );
 int cddp_stop( void );
 
-void cddp_data_enable( cddp_data_id_t id );
-void cddp_data_disable( cddp_data_id_t id );
+int cddp_data_enable( cddp_data_id_t id );
+int cddp_data_disable( cddp_data_id_t id );
 
-void cddp_data_set( cddp_data_id_t id, void* data );
-void cddp_data_get( cddp_data_id_t id, void* data, cddp_data_tick_t* tick );
+int cddp_data_set( cddp_data_id_t id, void* data );
+int cddp_data_get( cddp_data_id_t id, void* data, cddp_data_tick_t* tick );
 
 #endif /* _CDDP_PUBLIC_H_ */

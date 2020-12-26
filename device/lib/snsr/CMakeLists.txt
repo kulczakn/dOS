@@ -1,7 +1,7 @@
-# project Sim PROX (Simulated Proximity sensor)
-project(sim_PROX)
+# project SNSR (Sensor)
+project(SNSR)
 
-add_library(${PROJECT_NAME} src/sim_prox.c)
+add_library(${PROJECT_NAME} src/snsr.c)
 
 target_include_directories( ${PROJECT_NAME}
     PUBLIC ${PROJECT_SOURCE_DIR}/include
@@ -9,6 +9,6 @@ target_include_directories( ${PROJECT_NAME}
 
 # link high level modules
 target_link_libraries(${PROJECT_NAME}
-    CDDP
-    PROX
+    PUBLIC
+        pthread
 )

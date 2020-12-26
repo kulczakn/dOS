@@ -16,10 +16,10 @@
 /***** Project Includes *****/
 
 #include "cddp_public.h"
-#include "prox_public.h"
+#include "snsr_public.h"
 
 #include "dos_cddp_public.h"
-#include "dos_prox_public.h"
+#include "dos_snsr_public.h"
 
 // constants
 
@@ -53,20 +53,18 @@ int main(int argc, char const *argv[])
 		buf[ i ] = i;
 	}
 
-	// initialize hardware interfacing modules
+	// initialize modules
+	// maybe pass to high level init and have high levl init call it w/ pointers so to only use 1 interface
 	dos_cddp_init();
-	dos_prox_init();
-
-	// initialize high level modules
-	cddp_init();
-	prox_init();
+	dos_snsr_init(); 
 
 	// configure high level modules
 	cddp_data_enable( id );
+	// enable sensor
 
 	// start high level module processing
 	cddp_start();
-	prox_start();
+	snsr_start();
 	
 	// example
 	size_t i = 0;
@@ -82,7 +80,7 @@ int main(int argc, char const *argv[])
 
 	// stop high level module processing
 	cddp_stop();
-	prox_stop();
+	snsr_stop();
 
 	// exit
 	return 0;
