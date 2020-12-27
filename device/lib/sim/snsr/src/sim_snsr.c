@@ -14,6 +14,9 @@ static pthread_t        s_snsr_thread_id;       // task thread id
 
 // static functions
 
+int sim_snsr_start ( void* ( *f ) ( void* ) );
+static int sim_snsr_stop( void );
+
 // public interface
 
 /**
@@ -22,7 +25,7 @@ static pthread_t        s_snsr_thread_id;       // task thread id
  *  @return int
  * 
  **/
-int sim_snsr_init( void )
+int sim_snsr_init( snsr_start_task_t* snsr_start, snsr_stop_task_t* snsr_stop )
 {
     // local variables
     int rc = -1;
@@ -38,6 +41,11 @@ int sim_snsr_init( void )
     memset(&s_snsr_thread_attr, 0, sizeof(pthread_attr_t) );
     s_snsr_thread_id   = 0;
     
+    // configure start and stop tasks
+
+    *snsr_start = &sim_snsr_start;
+    *snsr_stop  = &sim_snsr_stop;
+
     // flag as initialized
 
     s_init = true;
@@ -117,6 +125,29 @@ int sim_snsr_start ( void* ( *f ) ( void* ) )
         rc = 1;
 
         printf("Sim SNSR started.\n");
+    }
+
+    return rc;
+}
+
+
+/**
+ *  @brief  sim_snsr_stop stops the module task.
+ **/
+static int sim_snsr_stop( void )
+{
+    // local variables
+    int rc = -1;
+    
+    if( s_started )
+    {
+        // if the thread has started, stop it
+
+        if( pthread_join(s_snsr_thread_id, NULL) )
+        {
+            s_started = false;
+            rc = 1;
+        }
     }
 
     return rc;

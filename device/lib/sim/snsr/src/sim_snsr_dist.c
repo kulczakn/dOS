@@ -58,9 +58,7 @@ int sim_snsr_dist_init( snsr_cfg_t* snsr_cfg )
 
     printf("\nSim CDDP initializing...\n");
 
-    // initialize sim snsr module
-
-    sim_snsr_init();
+    // clear cfg variable
 
     memset( snsr_cfg, 0, sizeof( snsr_cfg_t ) );
 

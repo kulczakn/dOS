@@ -22,7 +22,7 @@ enum
 
 // public interface
 
-int         sim_snsr_init( void );
+int         sim_snsr_init( snsr_start_task_t* snsr_start, snsr_stop_task_t* snsr_stop );
 
 snsr_tick_t sim_snsr_tick( void );
 bool        sim_snsr_initialized( void );
