@@ -5,11 +5,20 @@
 #include <pthread.h>
 #include <string.h>
 
+#include "cddp_public.h"
 #include "snsr_public.h"
 
 // constants
 
 #define SIM_SNSR_STACK_SIZE 4096
+
+// types
+
+enum 
+{
+    SIM_SNSR_DIST_ID_FIRST = SNSR_SIM_ID_FIRST + 10,
+    SIM_SNSR_DIST_ID_LAST  = SIM_SNSR_DIST_ID_FIRST + 5
+};
 
 // public interface
 

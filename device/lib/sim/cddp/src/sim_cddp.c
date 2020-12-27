@@ -89,7 +89,7 @@ static int sim_cddp_connect( void )
     int rc = -1;
 
     // create and configure socket
-	if( (s_conn = socket(AF_INET, SOCK_STREAM, 0) ) != -1 ) 
+	if( (s_conn = socket(AF_INET, SOCK_STREAM, 0) ) != 0 ) 
 	{ 
         // if the socket was created succesfully
 

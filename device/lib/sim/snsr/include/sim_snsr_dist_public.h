@@ -3,12 +3,18 @@
 
 #include <pthread.h>
 
-// #include "snsr_dist_public.h"
 #include "snsr_public.h"
+
+#include "sim_snsr_public.h"
 
 // constants
 
 // types
+
+enum 
+{
+    SIM_SNSR_DIST_ID = SIM_SNSR_DIST_ID_FIRST
+};
 
 // public interface
 

@@ -15,7 +15,8 @@
 
 // CDDP constants
 
-#define CDDP_DATA_SIZE  64
+#define CDDP_DATA_SIZE     64
+#define CDDP_DATA_BUF_SIZE 128
 
 // CDDP types
 
@@ -135,9 +136,10 @@ typedef struct
     bool             enabled;
     cddp_data_id_t   id;
     cddp_data_tick_t tick;
-    uint8_t data[ CDDP_DATA_SIZE - sizeof( cddp_data_id_t ) - sizeof( cddp_data_tick_t ) ];
+    uint8_t data[ CDDP_DATA_SIZE ];
+    uint8_t buf[ CDDP_DATA_BUF_SIZE -  CDDP_DATA_SIZE - sizeof( cddp_data_id_t ) - sizeof( cddp_data_tick_t ) - sizeof( bool ) ];
 } cddp_data_buf_t;
-// assert size == CDDP_DATA_SIZE ? - maybe want to store extra data on data other the data synced w/ other device
+// assert size == 128 ? - maybe want to store extra data on data other the data synced w/ other device
 
 
 // public interface
@@ -151,5 +153,7 @@ int cddp_data_disable( cddp_data_id_t id );
 
 int cddp_data_set( cddp_data_id_t id, void* data );
 int cddp_data_get( cddp_data_id_t id, void* data, cddp_data_tick_t* tick );
+
+bool cddp_connected( void );
 
 #endif /* _CDDP_PUBLIC_H_ */

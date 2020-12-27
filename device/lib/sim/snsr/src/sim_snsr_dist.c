@@ -13,10 +13,29 @@
 // static variables
 
 
-static int sim_snsr_dist_read( void* data, size_t size )
+static int sim_snsr_dist_read( void* data, size_t size, snsr_tick_t* tick )
 {
     // local variables
-    int rc = -1;
+    int rc             = -1;
+
+    if( sim_snsr_initialized() &&
+        sim_snsr_started()
+      )
+    {
+        // if initialized and started, check if cddp is connected
+
+        if( cddp_connected() )
+        {
+            // if cddp is connected, get the sim packet
+
+            if( cddp_data_get( SIM_SNSR_DIST_ID, data, tick ) )
+            {
+                // if we successfully read the packet
+
+                rc = 1;
+            }
+        }
+    }
 
     // if initialized and connected, read from the cddp sim data id to get the simulated data id and return it
     rc = 1;
@@ -51,7 +70,6 @@ int sim_snsr_dist_init( snsr_cfg_t* snsr_cfg )
 
     // configure cddp helper functions
     snsr_cfg->initialized = &sim_snsr_initialized;
-    snsr_cfg->started     = &sim_snsr_started;
 
     // flag simulated hardware interface as initialized
     if( snsr_cfg->initialized() )

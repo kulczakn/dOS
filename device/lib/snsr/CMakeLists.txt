@@ -10,5 +10,6 @@ target_include_directories( ${PROJECT_NAME}
 # link high level modules
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
+        CDDP
         pthread
 )

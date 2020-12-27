@@ -229,6 +229,18 @@ int cddp_data_get( cddp_data_id_t id, void* data, cddp_data_tick_t* tick )
 }
 
 
+/**
+ * @brief   cddp_connected returns the connected status for the cddp module
+ * 
+ * @return true 
+ * @return false 
+ */
+bool cddp_connected( void )
+{
+    return s_cddp_cfg.connected();
+}
+
+
 // private interface implementation
 
 // static functions
@@ -285,7 +297,7 @@ static void* s_cddp_task( void* arg )
                     // clear error
                     err = 0;
                 }
-                if( err = -1 )
+                if( err == -1 )
                 {
                     // unrecoverable error, cannot clear
                 } 
