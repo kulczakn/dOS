@@ -51,7 +51,7 @@ static int sim_snsr_dist_read( void* data, size_t size, snsr_tick_t* tick )
  * 
  *  @param  snsr_cfg    snsr functions
  **/
-int sim_snsr_dist_init( snsr_cfg_t* snsr_cfg )
+int sim_snsr_dist_init( snsr_cfg_t* snsr_cfg, snsr_buf_t* snsr_buf )
 {
     // local variables
     int rc = -1;
@@ -61,6 +61,7 @@ int sim_snsr_dist_init( snsr_cfg_t* snsr_cfg )
     // clear cfg variable
 
     memset( snsr_cfg, 0, sizeof( snsr_cfg_t ) );
+    memset( snsr_buf, 0, sizeof( snsr_buf_t ) );
 
     // configure cddp interface
     snsr_cfg->read = &sim_snsr_dist_read;
@@ -72,7 +73,10 @@ int sim_snsr_dist_init( snsr_cfg_t* snsr_cfg )
     // flag simulated hardware interface as initialized
     if( snsr_cfg->initialized() )
     {
-        // if module has initialized, return 1
+        // if module has initialized, init buffer
+
+        snsr_buf->id = SIM_SNSR_DIST_ID;
+
         printf("Sim CDDP initialized.\n");
 
         rc = 1;

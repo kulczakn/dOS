@@ -38,7 +38,7 @@ int main(int argc, char const *argv[])
 	int 			 rc;
 	cddp_data_id_t   id;
 	cddp_data_tick_t tick;
-	uint8_t 		 buf[ CDDP_DATA_SIZE ];
+	uint8_t 		 buf[ SNSR_DATA_SIZE ];
 
 	struct timespec req;
 
@@ -47,11 +47,7 @@ int main(int argc, char const *argv[])
 	req.tv_sec  = 1;
 	req.tv_nsec = 150000000;
 
-	id = 102;
-	for( size_t i = 0; i < CDDP_DATA_SIZE; i++ )
-	{
-		buf[ i ] = i;
-	}
+	id = 210;
 
 	// initialize modules
 	// maybe pass to high level init and have high levl init call it w/ pointers so to only use 1 interface
@@ -60,6 +56,7 @@ int main(int argc, char const *argv[])
 
 	// configure high level modules
 	cddp_data_enable( id );
+	snsr_enable( id );
 	// enable sensor
 
 	// start high level module processing
@@ -70,12 +67,16 @@ int main(int argc, char const *argv[])
 	size_t i = 0;
 	while( rc )
 	{
-		cddp_data_set( id, buf ); 
+		// cddp_data_set( id, buf ); 
+
+		// read sensor data
+		snsr_get( id, buf, &tick );
+
 		nanosleep( &req, &req );
 
 		i++;
-		if( i % 10 == 0 )
-			printf("Looped: %ld\n", i);
+		if( i % 3 == 0 )
+			printf("Sensor: %d\n", (uint32_t)(*buf));
 	}
 
 	// stop high level module processing

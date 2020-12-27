@@ -1,2 +1,9 @@
 
-device/lib/.DS_Store
+#files
+
+# directories
+server/.idea
+server/venv
+
+# files types
+*.pyc

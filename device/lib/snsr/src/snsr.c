@@ -13,7 +13,7 @@
 
 static snsr_cfg_t*       s_snsr_cfgs;
 static size_t            s_snsr_cnt;
-static snsr_data_buf_t*  s_snsr_buf;
+static snsr_buf_t*       s_snsr_buf;
 static snsr_start_task_t s_start_task;  // start the sensor processing task
 static snsr_stop_task_t  s_stop_task;   // stop the sensor processing task 
 
@@ -46,7 +46,7 @@ int snsr_init( snsr_cfg_t* snsr_cfgs,
     if( snsr_cfgs    &&
         snsr_cnt > 0 &&
         buf          &&
-        buf_size == sizeof( snsr_data_buf_t )
+        buf_size == sizeof( snsr_buf_t )
                   * snsr_cnt
       )
     {
@@ -67,9 +67,7 @@ int snsr_init( snsr_cfg_t* snsr_cfgs,
 
                 if( cfg->initialized() )
                 {
-                    // if low level module initialized, copy data into static variables
-
-                    s_snsr_cfgs[ i ] = *cfg;
+                    // if low level module initialized, continue
 
                     rc = 1;
                 }
@@ -96,9 +94,13 @@ int snsr_init( snsr_cfg_t* snsr_cfgs,
         if( rc > 0 )
         {
             // if no errors occured setting functions, copy buffer pointer and counts
+            
+            s_snsr_cfgs = snsr_cfgs;
+            s_snsr_buf  = buf;
+            s_snsr_cnt  = snsr_cnt;
 
-            s_snsr_buf = buf;
-            s_snsr_cnt = snsr_cnt;
+            s_start_task = snsr_start_task;
+            s_stop_task  = snsr_stop_task;
         }
     }
 
@@ -144,21 +146,30 @@ int snsr_enable( snsr_id_t id )
 {
     // local variables
     int rc = -1;
-    snsr_cfg_t* cfg = NULL;
+    snsr_buf_t* buf = NULL;
 
-    for( size_t i = 0; i < s_snsr_cnt; i ++)
+    // validate input
+    if( id >= SNSR_ID_FIRST && 
+        id <  SNSR_ID_LAST
+      )
     {
-        cfg = &s_snsr_cfgs[ i ];
-
-        // validate input
-        if( id >= SNSR_ID_FIRST && 
-            id <  SNSR_ID_LAST  &&
-            !s_snsr_buf[ id ].enabled
-        )
+        for( size_t i = 0; i < s_snsr_cnt; i ++)
         {
-            s_snsr_buf[ id ].enabled = true;
+            // find the sensor to enable
 
-            rc = 1;
+            if( s_snsr_buf[ i ].id == id )
+            {
+                // if this is the sensor to enable, enable it
+
+                buf = &s_snsr_buf[ i ];
+
+                if( !s_snsr_buf[ i ].enabled )
+                {
+                    s_snsr_buf[ i ].enabled = true;
+
+                    rc = 1;
+                }
+            }
         }
     }
 
@@ -172,20 +183,30 @@ int snsr_disable( snsr_id_t id )
     int rc = -1;
     snsr_cfg_t* cfg = NULL;
 
-    for( size_t i = 0; i < s_snsr_cnt; i ++)
+    // validate input
+    if( id >= SNSR_ID_FIRST && 
+        id <  SNSR_ID_LAST
+      )
     {
-        cfg = &s_snsr_cfgs[ i ];
-
-        // validate input
-        if( id >= SNSR_ID_FIRST && 
-            id <  SNSR_ID_LAST  &&
-            s_snsr_buf[ id ].enabled
-        )
+        for( size_t i = 0; i < s_snsr_cnt; i ++)
         {
-            // disable data id
-            s_snsr_buf[ id ].enabled = false;
+            // find the sensor to disable
 
-            rc = 1;
+            if( s_snsr_buf[ i ].id == id )
+            {
+                // if this is the correct sensor, disable it
+
+                cfg = &s_snsr_cfgs[ i ];
+
+                if( s_snsr_buf[ id ].enabled )
+                {
+                    // disable data id
+                    s_snsr_buf[ id ].enabled = false;
+
+                    rc = 1;
+                }
+
+            }
         }
     }
 
@@ -197,11 +218,10 @@ int snsr_get( snsr_id_t id, void* data, snsr_tick_t* tick )
 {
     // local variables
     int rc = -1;
-    snsr_data_buf_t* buf = NULL;
+    snsr_buf_t* buf = NULL;
 
     if( id >= SNSR_ID_FIRST      && 
         id <  SNSR_ID_LAST       &&
-        s_snsr_buf[ id ].enabled &&
         data
       )
     {
@@ -211,14 +231,20 @@ int snsr_get( snsr_id_t id, void* data, snsr_tick_t* tick )
         {
             if( s_snsr_buf[ i ].id == id )
             {
+                // if this is the sensor, check if it's enables
+
                 buf = &s_snsr_buf[ i ];
 
-                // if it's the correct id, copy the memory into the data buffer
+                if( buf->enabled )
+                {
+                    // if it's enabled, get the data
 
-                memcpy( data, &buf->data, SNSR_DATA_SIZE );
-                memcpy( tick, &buf->tick, sizeof( snsr_tick_t ) );
-                
-                rc = 1;
+                    memcpy( data, buf->data, SNSR_DATA_SIZE );
+                    memcpy( tick, &buf->tick, sizeof( snsr_tick_t ) );
+                    
+                    rc = 1;
+                }
+
             }
         }
     }
@@ -236,9 +262,9 @@ int snsr_get( snsr_id_t id, void* data, snsr_tick_t* tick )
 static void* s_snsr_task( void* arg )
 {
     // local variables
-    int err = 0;
-    snsr_data_buf_t* buf = NULL;
-    snsr_cfg_t*      cfg = NULL;
+    int         err = 0;
+    snsr_buf_t* buf = NULL;
+    snsr_cfg_t* cfg = NULL;
 
     // start main loop
     while( err != -1 )

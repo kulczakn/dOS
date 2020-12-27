@@ -49,7 +49,7 @@ typedef struct
     bool        enabled;
     uint8_t     data[ SNSR_DATA_SIZE ];
     uint8_t     buf[ SNSR_DATA_BUF_SIZE - SNSR_DATA_SIZE - sizeof( snsr_id_t ) - sizeof( snsr_tick_t ) - sizeof( bool ) ];
-} snsr_data_buf_t;
+} snsr_buf_t;
 // sizeof == 128
 
 // public interface

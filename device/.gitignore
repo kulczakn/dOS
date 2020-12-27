@@ -1,6 +1,7 @@
 # files
 dOS
 CMakeCache.txt
+.DS_Store
 
 # directories
 CMakeFiles

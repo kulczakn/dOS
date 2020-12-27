@@ -18,6 +18,6 @@ enum
 
 // public interface
 
-int sim_snsr_dist_init( snsr_cfg_t* snsr_cfg );
+int sim_snsr_dist_init( snsr_cfg_t* snsr_cfg, snsr_buf_t* snsr_buf );
 
 #endif /* _SIM_SNSR_DIST_PUBLIC_H_ */
