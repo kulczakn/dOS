@@ -14,12 +14,6 @@
 
 // types
 
-enum 
-{
-    SIM_SNSR_DIST_ID_FIRST = SNSR_SIM_ID_FIRST + 10,
-    SIM_SNSR_DIST_ID_LAST  = SIM_SNSR_DIST_ID_FIRST + 5
-};
-
 // public interface
 
 int         sim_snsr_init( snsr_start_task_t* snsr_start, snsr_stop_task_t* snsr_stop );

@@ -11,11 +11,6 @@
 
 // types
 
-enum 
-{
-    SIM_SNSR_DIST_ID = SIM_SNSR_DIST_ID_FIRST
-};
-
 // public interface
 
 int sim_snsr_dist_init( snsr_cfg_t* snsr_cfg, snsr_buf_t* snsr_buf );

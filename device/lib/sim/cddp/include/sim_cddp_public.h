@@ -1,6 +1,7 @@
 #ifndef _SIM_CDDP_PUBLIC_H_
 #define _SIM_CDDP_PUBLIC_H_
 
+#include <limits.h>
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -12,6 +13,7 @@
 
 #include <arpa/inet.h> 
 #include <sys/socket.h> 
+#include <sys/time.h>
 
 #include "cddp_public.h"
 
@@ -19,7 +21,7 @@
 
 #define SIM_CDDP_SERV_PORT  8989
 #define SIM_CDDP_SERV_ADDR  "127.0.0.1"
-#define SIM_CDDP_STACK_SIZE 4096
+#define SIM_CDDP_STACK_SIZE PTHREAD_STACK_MIN 
 
 // CDDP SIM types
 

@@ -34,14 +34,16 @@ class CDDPServer:
         self.connected = False
         self.socket = None
 
-        self.conn_workers_count = conn_workers
+        self.conn_in_workers_count = conn_workers
+        self.conn_out_workers_count = conn_workers
         self.queue_workers_count = queue_workers
 
         # connections and threads
         self.server_thread = None
         self.conn_pool = []
         self.queue_workers_pool = []
-        self.conn_workers_pool = []
+        self.conn_in_workers_pool = []
+        self.conn_out_workers_pool = []
 
         self.input_queue = Queue()
         self.output_queue = Queue()
@@ -66,17 +68,23 @@ class CDDPServer:
         self.server_thread = threading.Thread(target=self._server_thread)
         print("Server thread created\n")
 
-        print(f"Creating {self.conn_workers_count} connection workers...")
-        for i in range(self.conn_workers_count):
-            conn_worker = threading.Thread(target=self._conn_worker)
-            self.conn_workers_pool.append(conn_worker)
-        print(f"{self.conn_workers_count} conn workers created\n")
+        print(f"Creating {self.conn_in_workers_count} connection input workers...")
+        for i in range(self.conn_in_workers_count):
+            conn_worker = threading.Thread(target=self._conn_in_worker)
+            self.conn_in_workers_pool.append(conn_worker)
+        print(f"{self.conn_in_workers_count} connection input workers created\n")
 
-        print(f"Creating {self.queue_workers_count} connection workers...")
+        print(f"Creating {self.conn_out_workers_count} connection output workers...")
+        for i in range(self.conn_out_workers_count):
+            conn_worker = threading.Thread(target=self._conn_out_worker)
+            self.conn_out_workers_pool.append(conn_worker)
+        print(f"{self.conn_out_workers_count} connection output workers created\n")
+
+        print(f"Creating {self.queue_workers_count} queue workers...")
         for i in range(self.queue_workers_count):
             queue_worker = threading.Thread(target=self._queue_worker)
             self.queue_workers_pool.append(queue_worker)
-        print(f"{self.queue_workers_count} conn workers created\n")
+        print(f"{self.queue_workers_count} queue workers created\n")
 
         # start threads
 
@@ -84,15 +92,20 @@ class CDDPServer:
         self.server_thread.start()
         print("Server thread started\n")
 
-        print(f"Starting {self.conn_workers_count} connection workers...")
-        for conn_worker in self.conn_workers_pool:
+        print(f"Starting {self.conn_in_workers_count} connection input workers...")
+        for conn_worker in self.conn_in_workers_pool:
             conn_worker.start()
-        print(f"{self.conn_workers_count} conn workers started\n")
+        print(f"{self.conn_in_workers_count} connection input workers started\n")
 
-        print(f"Starting {self.queue_workers_count} connection workers...")
+        print(f"Starting {self.conn_out_workers_count} connection output workers...")
+        for conn_worker in self.conn_out_workers_pool:
+            conn_worker.start()
+        print(f"{self.conn_out_workers_count} connection output workers started\n")
+
+        print(f"Starting {self.queue_workers_count} queue workers...")
         for queue_worker in self.queue_workers_pool:
             queue_worker.start()
-        print(f"{self.queue_workers_count} conn workers started\n")
+        print(f"{self.queue_workers_count} queue started\n")
 
     def get_active(self):
         # return list of active data ids
@@ -119,8 +132,7 @@ class CDDPServer:
             # add to connection pool
             self.conn_pool.append((conn, addr))
 
-    def _conn_worker(self):
-        pass
+    def _conn_in_worker(self):
 
         # local variables
 
@@ -137,7 +149,7 @@ class CDDPServer:
 
                 # while there's good data and the connection is alive
                 while data and conn_alive:
-                    # process data
+                    # process incoming data
                     ddata = struct.unpack("IQ112s", data)
 
                     # TODO: LOG
@@ -175,6 +187,22 @@ class CDDPServer:
 
         # end _conn_worker
 
+    def _conn_out_worker(self):
+        # local variables
+
+        # until killed
+        while True:
+
+            # clear the queue
+            while not self.output_queue.empty():
+                # get a packet
+                packet = self.output_queue.get()
+
+                # dump to bytes
+                data = struct.pack("IQ112s", packet["id"], packet["tick"], packet["data"])
+
+                # write to whichever connections it's addressed to
+
     def _queue_worker(self):
 
         # local variables
@@ -191,7 +219,14 @@ class CDDPServer:
                 # self.redis.set( packet["id"], ( packet["tick"], packet["data"] ) )
                 self.data[packet["id"]] = (packet["tick"], packet["data"])
 
-                # push data to worker output queue
+            # push data to worker output queue
+            packet = {
+                "id": 210,
+                "tick": time.time_ns(),
+                "data": 73
+            }
+
+            self.output_queue.put(packet)
 
 
 def main():

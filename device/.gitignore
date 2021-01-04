@@ -2,6 +2,7 @@
 dOS
 CMakeCache.txt
 .DS_Store
+**/Makefile
 
 # directories
 CMakeFiles

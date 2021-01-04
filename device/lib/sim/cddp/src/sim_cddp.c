@@ -89,7 +89,7 @@ static int sim_cddp_connect( void )
     int rc = -1;
 
     // create and configure socket
-	if( (s_conn = socket(AF_INET, SOCK_STREAM, 0) ) != 0 ) 
+	if( ( s_conn = socket(AF_INET, SOCK_STREAM, 0 ) ) != 0 ) 
 	{ 
         // if the socket was created succesfully
 
@@ -107,6 +107,7 @@ static int sim_cddp_connect( void )
 
                 // set static variables
                 s_tick_init = (cddp_data_tick_t)time( NULL );
+                s_connected = true;
 
                 printf("Sim CDDP connected.\n");
 
@@ -122,16 +123,28 @@ static int sim_cddp_connect( void )
 /**
  * @brief   sim_cddp_read reads data packet from the socket interface
  * 
- * @param   data  data to be sent
- * @param   size  size of the data
- * @param   read  number of bytes read
+ * @param   data    data to be sent
+ * @param   size    size of the data
+ * @param   read    number of bytes read
+ * @param   timeout timeout in usec
  * @return int 
  */
-static int sim_cddp_read( void* data, size_t size, size_t* read )
+static int sim_cddp_read( void* data, size_t size, size_t* read, size_t timeout )
 {
     // local variables
     int rc = -1;
     size_t bytes_read;
+    struct timeval tv;
+
+    if( timeout )
+    {
+        // if a timeout is given configure the socket
+
+        tv.tv_sec = timeout / 1000;
+        tv.tv_usec = timeout % 1000;
+
+        setsockopt( s_conn, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof( struct timeval ) );
+    }
 
     if( ( bytes_read = recv(s_conn, data, size, 0) ) > 0 )
     {
@@ -145,6 +158,17 @@ static int sim_cddp_read( void* data, size_t size, size_t* read )
             rc = 1;
         }
     }
+
+    if( timeout )
+    {
+        // if a timeout was given, clear the configuration
+
+        tv.tv_sec = 0;
+        tv.tv_usec = 0;
+
+        setsockopt( s_conn, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof( struct timeval ) );
+    }
+
 
     return rc;
 }
@@ -185,20 +209,20 @@ static int sim_cddp_start ( void* ( *f ) ( void* ) )
     int rc = -1;
 
     if( s_init      &&
-        s_connected &&
         !s_started
       )
     {
-        // if initialized, connected, and not initialized, start task
+        // if initialized but not started, start task
 
-        rc = pthread_attr_init( &s_cddp_thread_attr );
-        rc = pthread_attr_setstacksize( &s_cddp_thread_attr, SIM_CDDP_STACK_SIZE );
+        if( pthread_attr_init( &s_cddp_thread_attr ) == 0 && 
+            pthread_attr_setstacksize( &s_cddp_thread_attr, SIM_CDDP_STACK_SIZE ) == 0 &&
+            pthread_create( &s_cddp_thread_id, &s_cddp_thread_attr, f, NULL )
+          )
+        {
+            rc = 1;
+            printf("Sim CDDP started.\n");
+        }
 
-        rc = pthread_create( &s_cddp_thread_id, &s_cddp_thread_attr, f, NULL );
-
-        rc = 1;
-
-        printf("Sim CDDP started.\n");
     }
 
     return rc;

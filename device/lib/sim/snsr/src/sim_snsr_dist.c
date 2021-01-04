@@ -28,7 +28,7 @@ static int sim_snsr_dist_read( void* data, size_t size, snsr_tick_t* tick )
         {
             // if cddp is connected, get the sim packet
 
-            if( cddp_data_get( SIM_SNSR_DIST_ID, data, tick ) )
+            if( cddp_data_get( CDDP_SNSR_DIST_ID, data, tick ) )
             {
                 // if we successfully read the packet
 
@@ -75,7 +75,7 @@ int sim_snsr_dist_init( snsr_cfg_t* snsr_cfg, snsr_buf_t* snsr_buf )
     {
         // if module has initialized, init buffer
 
-        snsr_buf->id = SIM_SNSR_DIST_ID;
+        snsr_buf->id = SNSR_SIM_DIST_ID;
 
         printf("Sim CDDP initialized.\n");
 
