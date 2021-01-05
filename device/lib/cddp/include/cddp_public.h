@@ -21,6 +21,7 @@
 
 #define CDDP_CONN_PKT_NAME_BYTELEN   16
 #define CDDP_CONN_PKT_INTRFC_BYTELEN 24
+#define CDDP_CONN_TIMEOUT            10000
 #define CDDP_CONNACK_TIMEOUT         10000
 #define CDDP_TASK_TIMEOUT            100
 
@@ -193,8 +194,10 @@ typedef struct
 
 typedef struct {
     uint8_t device;
-    uint8_t intrfc[ CDDP_CONN_PKT_INTRFC_BYTELEN ];     // enough for a bitmask of enabled data ids
-    uint8_t wrtble[ CDDP_CONN_PKT_INTRFC_BYTELEN ];
+    uint8_t intrf[ CDDP_CONN_PKT_INTRFC_BYTELEN ];
+                                                // bitmask of enabled data ids
+    uint8_t wrtbl[ CDDP_CONN_PKT_INTRFC_BYTELEN ];
+                                                // if each data id is writeable
 
     uint8_t buf[ CDDP_DATA_SIZE - sizeof( uint8_t ) - CDDP_CONN_PKT_INTRFC_BYTELEN - CDDP_CONN_PKT_INTRFC_BYTELEN ];
 } cddp_conn_data_t;
@@ -223,14 +226,15 @@ typedef struct
 typedef struct 
 {
     bool       enabled;
+    bool       writable;
     cddp_pkt_t pkt;
-} cddp_data_buf_t;
+} cddp_intrf_t;
 // assert size == 128 ? - maybe want to store extra data on data other the data synced w/ other device
 
 
 // public interface
 
-int cddp_init( cddp_cfg_t* cfg, cddp_data_buf_t* buf, size_t buf_size );
+int cddp_init( cddp_cfg_t* cfg, cddp_intrf_t* buf, size_t buf_size );
 int cddp_start( void );
 int cddp_stop( void );
 

@@ -8,17 +8,16 @@
 
 // static
 
-static void*            s_cddp_task( void* arg );      
-                                                // cddp module processing task
-static cddp_cfg_t       s_cddp_cfg;             // pointers to cddp IO interface 
-static cddp_data_buf_t* s_cddp_data_buf;        // pointer to cddp data buffer in project side memory, MUST be size sizeof(cddp_data_buf_t) * CDDP_DATA_ID_COUNT
+static void*         s_cddp_task( void* arg );  // cddp module processing task
+static cddp_cfg_t    s_cddp_cfg;                // pointers to cddp IO interface 
+static cddp_intrf_t* s_cddp_intrf;              // pointer to cddp data buffer in project side memory, MUST be size sizeof( cddp_intrf_t ) * CDDP_DATA_ID_COUNT
 
 static bool      s_handshook;                   // handshake completed flag
 
 static uint8_t*  s_device;                      // pointer to device type enum saved in cddp buffer
 static int32_t*  s_addr;                        // pointer to device address saved in cddp buffer
-static uint8_t*  s_intrfc;                      // pointer to device interface saved in cddp buffer
-static uint8_t*  s_wrtble;                      // pointer to device writeable configuration saved in cddp buffer
+static uint8_t*  s_intrf;                       // pointer to device interface saved in cddp buffer
+static uint8_t*  s_wrtbl;                       // pointer to device writeable configuration saved in cddp buffer
 
 // public interface implementation
 
@@ -27,11 +26,11 @@ static uint8_t*  s_wrtble;                      // pointer to device writeable c
  * 
  * @param   cfg         low level module function pointers
  * @param   buf         cddp data buffer in project side memory  
- * @param   buf_size    size of data buffer, must be sizeof(cddp_data_buf_t) * CDDP_DATA_ID_COUNT
+ * @param   buf_size    size of data buffer, must be sizeof( cddp_intrf_t ) * CDDP_DATA_ID_COUNT
  * 
  * @return int 
  */
-int cddp_init( cddp_cfg_t* cddp_cfg, cddp_data_buf_t* cddp_buf, size_t buf_size )
+int cddp_init( cddp_cfg_t* cddp_cfg, cddp_intrf_t* cddp_data, size_t buf_size )
 {
     // local variables
     int rc = -1;
@@ -49,8 +48,8 @@ int cddp_init( cddp_cfg_t* cddp_cfg, cddp_data_buf_t* cddp_buf, size_t buf_size 
         cddp_cfg->initialized &&
         cddp_cfg->started     &&
         cddp_cfg->tick        &&
-        cddp_buf              &&
-        buf_size == sizeof(cddp_data_buf_t) 
+        cddp_data             &&
+        buf_size == sizeof( cddp_intrf_t ) 
                   * CDDP_DATA_ID_COUNT
      )
     {
@@ -59,19 +58,19 @@ int cddp_init( cddp_cfg_t* cddp_cfg, cddp_data_buf_t* cddp_buf, size_t buf_size 
         if( cddp_cfg->initialized() )
         {
             // get pointers
-            conn_data    = ( cddp_conn_data_t* )&cddp_buf[ CDDP_SYS_DATA_CONN ].pkt.data;
-            connack_data = ( cddp_connack_data_t* )&cddp_buf[ CDDP_SYS_DATA_CONNACK ].pkt.data;
+            conn_data    = ( cddp_conn_data_t* )&cddp_data[ CDDP_SYS_DATA_CONN ].pkt.data;
+            connack_data = ( cddp_connack_data_t* )&cddp_data[ CDDP_SYS_DATA_CONNACK ].pkt.data;
 
             // if low level module initialized, copy data into static variables
-            s_cddp_cfg = *cddp_cfg;
-            s_cddp_data_buf = cddp_buf;
+            s_cddp_cfg   = *cddp_cfg;
+            s_cddp_intrf = cddp_data;
 
             s_handshook = false;
 
             s_addr   = &connack_data->addr;
             s_device = &conn_data->device;
-            s_intrfc = (uint8_t *)&conn_data->intrfc;
-            s_wrtble = (uint8_t *)&conn_data->wrtble;
+            s_intrfc = (uint8_t *)&conn_data->intrf;
+            s_wrtble = (uint8_t *)&conn_data->wrtbl;
 
             rc = 1;
         }
@@ -149,10 +148,10 @@ int cddp_data_enable( cddp_data_id_t id )
     // validate input
     if( id >= CDDP_DATA_ID_FIRST && 
         id <  CDDP_DATA_ID_LAST  &&
-        !s_cddp_data_buf[ id ].enabled
+        !s_cddp_intrf[ id ].enabled
       )
     {
-        s_cddp_data_buf[ id ].enabled = true;
+        s_cddp_intrf[ id ].enabled = true;
 
         rc = 1;
     }
@@ -174,11 +173,11 @@ int cddp_data_disable( cddp_data_id_t id )
     // validate input
     if( id >= CDDP_DATA_ID_FIRST && 
         id <  CDDP_DATA_ID_LAST  &&
-        s_cddp_data_buf[ id ].enabled
+        s_cddp_intrf[ id ].enabled
       )
     {
         // disable data id
-        s_cddp_data_buf[ id ].enabled = false;
+        s_cddp_intrf[ id ].enabled = false;
 
         rc = 1;
     }
@@ -202,16 +201,16 @@ int cddp_data_set( cddp_data_id_t id, void* data )
     if( id >= CDDP_DATA_ID_FIRST && 
         id <  CDDP_DATA_ID_LAST  &&
         data                     &&
-        s_cddp_data_buf[ id ].enabled
+        s_cddp_intrf[ id ].enabled
       )
     {
         // invalid data or 
         // copy data over
-        memcpy( &s_cddp_data_buf[ id ].pkt.data, data, CDDP_DATA_SIZE );
+        memcpy( &s_cddp_intrf[ id ].pkt.data, data, CDDP_DATA_SIZE );
 
         // update 
-        s_cddp_data_buf[ id ].pkt.tick = s_cddp_cfg.tick();
-        s_cddp_data_buf[ id ].pkt.id = id;
+        s_cddp_intrf[ id ].pkt.tick = s_cddp_cfg.tick();
+        s_cddp_intrf[ id ].pkt.id = id;
 
         rc = 1;
     }
@@ -233,15 +232,15 @@ int cddp_data_get( cddp_data_id_t id, void* data, cddp_data_tick_t* tick )
     int rc = -1;
 
     // validate input
-    if( id >= CDDP_DATA_ID_FIRST      && 
-        id <  CDDP_DATA_ID_LAST       &&
-        s_cddp_data_buf[ id ].enabled &&
+    if( id >= CDDP_DATA_ID_FIRST  && 
+        id <  CDDP_DATA_ID_LAST   &&
+        s_cddp_intrf[ id ].enabled &&
         data
       )
     {
         // copy data over
-        memcpy( data, &s_cddp_data_buf[ id ].pkt.data, CDDP_DATA_SIZE );
-        memcpy( tick, &s_cddp_data_buf[ id ].pkt.tick, sizeof( cddp_data_tick_t ) );
+        memcpy( data, &s_cddp_intrf[ id ].pkt.data, CDDP_DATA_SIZE );
+        memcpy( tick, &s_cddp_intrf[ id ].pkt.tick, sizeof( cddp_data_tick_t ) );
         
         rc = 1;
     }
@@ -285,21 +284,21 @@ static int s_cddp_handshake( void )
         // flag bits in interface mask
         for( size_t i = 0; i < CDDP_DATA_ID_COUNT; i++ )
         {
-            if( s_cddp_data_buf[ i ].enabled &&
+            if( s_cddp_intrf[ i ].enabled &&
                 s_device != 0               
               )
             {
                 // if data id is enabled, flip bit in interface
 
-                s_intrfc[ i/8 ] |= 1 << ( i % 8 );
-                s_wrtble[ i/8 ] |= 1 << ( i % 8 );
+                s_intrf[ i/8 ] |= 1 << ( i % 8 );
+                s_wrtbl[ i/8 ] |= 1 << ( i % 8 );
             }
         }
 
         // copy data
         conn_data.device = *s_device;
-        memcpy( &conn_data.intrfc, s_intrfc, CDDP_CONN_PKT_INTRFC_BYTELEN );
-        memcpy( &conn_data.wrtble, s_wrtble, CDDP_CONN_PKT_INTRFC_BYTELEN );
+        memcpy( &conn_data.intrf, s_intrf, CDDP_CONN_PKT_INTRFC_BYTELEN );
+        memcpy( &conn_data.wrtbl, s_wrtbl, CDDP_CONN_PKT_INTRFC_BYTELEN );
 
         // create conn packet
         conn_pkt.addr = CDDP_SYS_ADDR;
@@ -340,7 +339,7 @@ static int s_cddp_pkt_handle( cddp_pkt_t pkt )
 {
     // local variables
     int rc = -1;
-    cddp_data_buf_t* buf;
+    cddp_intrf_t* buf;
 
     // handle packet
 
@@ -349,7 +348,7 @@ static int s_cddp_pkt_handle( cddp_pkt_t pkt )
         pkt.addr | *s_addr 
       )
     {
-        buf = &s_cddp_data_buf[ pkt.id ];
+        buf = &s_cddp_intrf[ pkt.id ];
 
         // if the device is targeted by the packet
 
@@ -439,9 +438,9 @@ static void* s_cddp_task( void* arg )
                     for( size_t i = CDDP_DATA_ID_FIRST; i < CDDP_DATA_ID_LAST; i++ )
                     {
                         // send active packets
-                        if( s_cddp_data_buf[ i ].enabled )
+                        if( s_cddp_intrf[ i ].enabled )
                         {
-                            cddp_pkt = &s_cddp_data_buf[ i ].pkt;
+                            cddp_pkt = &s_cddp_intrf[ i ].pkt;
 
                             if( s_cddp_cfg.send( cddp_pkt, CDDP_PKT_SIZE ) )
                             {

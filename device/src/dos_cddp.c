@@ -6,8 +6,8 @@
 
 // project side variables
 
-cddp_cfg_t      cddp_cfg;                               // pointers to low level module functions
-cddp_data_buf_t cddp_data_buf[ CDDP_DATA_ID_COUNT ];    // cddp data buffer
+cddp_cfg_t   cddp_cfg;                          // pointers to low level module functions
+cddp_intrf_t cddp_intrf[ CDDP_DATA_ID_COUNT ];  // cddp data buffer
 
 /**
  * @brief   dos_cddp_init initializes the cddp project side module by calling the hardware or simulated cddp interface indicated by the precompiler flags
@@ -39,7 +39,7 @@ int dos_cddp_init( void )
     {
         // if low level module was initialized, initialize high level module
     
-        if( cddp_init( &cddp_cfg, &cddp_data_buf[ 0 ], sizeof( cddp_data_buf ) ) )
+        if( cddp_init( &cddp_cfg, &cddp_intrf[ 0 ], sizeof( cddp_intrf ) ) )
         {
             // if module succesfully initializes, configure device data
 
