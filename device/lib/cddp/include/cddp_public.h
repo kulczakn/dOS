@@ -24,6 +24,7 @@
 #define CDDP_CONN_TIMEOUT            10000
 #define CDDP_CONNACK_TIMEOUT         10000
 #define CDDP_TASK_TIMEOUT            100
+#define CDDP_TASK_TICKRATE           100
 
 #define CDDP_SYS_ADDR 1
 #define CDDP_ALL_ADDR 0xFFFFFFFF

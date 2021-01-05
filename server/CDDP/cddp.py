@@ -11,6 +11,7 @@ CDDP_PKT_SIZE        = 128
 CDDP_CONN_TIMEOUT    = 1000
 CDDP_CONNACK_TIMEOUT = 10000
 CDDP_TASK_TIMEOUT    = 100
+CDDP_TASK_TICKRATE   = 100
 
 class DataID(enum.Enum):
     CDDP_DATA_ID_FIRST = 0
@@ -62,6 +63,7 @@ class Packet(ctypes.Structure):
         ("buf",  ctypes.POINTER(ctypes.c_uint8))
     ]
 
+
 class ConnData(ctypes.Structure):
     _fields_ = [
         ("device", ctypes.c_uint8),
@@ -76,6 +78,7 @@ class ConnackData(ctypes.Structure):
         ("buf",  ctypes.POINTER(ctypes.c_uint8))
     ]
 
+
 class Interface:
     def __init__(self, enabled=True, writable=False, pkt=None):
         self.enabled  = enabled
@@ -85,6 +88,7 @@ class Interface:
         # state
         self.updated = False
 
+
 class Device:
 
     def __init__(self, conn, address, loop=None):
@@ -93,13 +97,24 @@ class Device:
         self.loop    = loop if loop else asyncio.get_event_loop()
 
         # init state
+        self.task      = None
         self.handshook = False
         self.interface = [None] * DataID.CDDP_DATA_ID_COUNT.value
 
+    async def start(self):
+        self.task = self.loop.create_task(self.device_tick_task())
+        self.loop.run_forever(self.task)
+
+    async def device_tick_task(self):
+        # periodically refresh device interface data
+        while True:
+            await self.refresh()
+
+            asyncio.sleep(CDDP_TASK_TICKRATE)
+
     async def refresh(self):
         # refresh interface
-        self.refresh_input()                    # read all packets from socket and handle
-        self.refresh_output()                   # if any enabled data is writable and updated, write update to socket
+        await (self.refresh_input(), self.refresh_output())
 
     async def refresh_input(self):
         # read any data from connection and update self
@@ -197,8 +212,7 @@ class Server:
         self.socket = None
 
         # server tasks
-        self.server_task      = None
-        self.server_tick_task = None
+        self.server_task = None
 
         # connected devices
         self.devices_connected = []
@@ -226,20 +240,13 @@ class Server:
             # handle new connection
             self._handle_conn(conn, addr)
 
-    async def _server_tick_worker(self):
-        # refresh device IO
-
-        while True:
-            # refresh each device
-            for device in self.devices_connected:
-                device.
-
     def _handle_conn(self, conn, addr):
         device_addr = len(self.devices_connected) + 1
         device = Device(conn, device_addr)
 
         if await device.handshake():
-            # if device performs handshake, add to connected devices
+            # if device performs handshake, start the task and add it to the connected devices
+            device.start()
             self.devices_connected.append(device)
         else:
             # if handshake fails, close connection
