@@ -1,7 +1,6 @@
 import asyncio
 import enum
 import socket
-import time
 import ctypes
 
 # constants
@@ -12,6 +11,7 @@ CDDP_CONN_TIMEOUT    = 1000
 CDDP_CONNACK_TIMEOUT = 10000
 CDDP_TASK_TIMEOUT    = 100
 CDDP_TASK_TICKRATE   = 100
+
 
 class DataID(enum.Enum):
     CDDP_DATA_ID_FIRST = 0
@@ -110,7 +110,7 @@ class Device:
         while True:
             await self.refresh()
 
-            asyncio.sleep(CDDP_TASK_TICKRATE)
+            asyncio.sleep(CDDP_TASK_TICKRATE/1000)
 
     async def refresh(self):
         # refresh interface
@@ -219,7 +219,7 @@ class Server:
 
     # public methods
 
-    def start(self):
+    async def start(self):
 
         # open server socket and start server coroutine
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -240,7 +240,7 @@ class Server:
             # handle new connection
             self._handle_conn(conn, addr)
 
-    def _handle_conn(self, conn, addr):
+    async def _handle_conn(self, conn, addr):
         device_addr = len(self.devices_connected) + 1
         device = Device(conn, device_addr)
 
