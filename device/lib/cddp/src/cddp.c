@@ -69,8 +69,8 @@ int cddp_init( cddp_cfg_t* cddp_cfg, cddp_intrf_t* cddp_data, size_t buf_size )
 
             s_addr   = &connack_data->addr;
             s_device = &conn_data->device;
-            s_intrfc = (uint8_t *)&conn_data->intrf;
-            s_wrtble = (uint8_t *)&conn_data->wrtbl;
+            s_intrf = (uint8_t *)&conn_data->intrf;
+            s_wrtbl = (uint8_t *)&conn_data->wrtbl;
 
             rc = 1;
         }
