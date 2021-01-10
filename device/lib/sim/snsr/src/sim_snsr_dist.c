@@ -28,7 +28,7 @@ static int sim_snsr_dist_read( void* data, size_t size, snsr_tick_t* tick )
         {
             // if cddp is connected, get the sim packet
 
-            if( cddp_data_get( CDDP_SNSR_DIST_ID, data, tick ) )
+            if( cddp_data_get( 110, data, tick ) )
             {
                 // if we successfully read the packet
 

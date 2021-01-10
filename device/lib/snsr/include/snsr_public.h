@@ -18,11 +18,11 @@ typedef enum
 {
     SNSR_ID_FIRST = 0,
 
-    SNSR_DIST_ID       = CDDP_SNSR_DIST_ID,
+    SNSR_DIST_ID       = 10,
 
     SNSR_SIM_ID_FIRST = CDDP_SIM_DATA_ID_FIRST,
     
-    SNSR_SIM_DIST_ID  = CDDP_SIM_SNSR_DIST_ID,
+    SNSR_SIM_DIST_ID  = 110,
     
     SNSR_SIM_ID_LAST  = SNSR_SIM_ID_FIRST + 200,
 

@@ -14,35 +14,26 @@ class DataID(enum.Enum):
 
     CDDP_SYS_DATA_CONN     = CDDP_SYS_DATA_ID_FIRST
     CDDP_SYS_DATA_CONNACK  = 1
-    CDDP_SYS_DATA_KICK     = 2
-    CDDP_SYS_DATA_DISCONN  = 3
+    CDDP_SYS_DATA_INTRF    = 2
+    CDDP_SYS_DATA_KICK     = 3
+    CDDP_SYS_DATA_DISCONN  = 4
 
     CDDP_SYS_DATA_ID_LAST = 9
 
-    # Sensor IDs are used to store and send data to connected sensors by the sensor module
-    CDDP_SNSR_ID_FIRST = 10
-
-    CDDP_SNSR_DIST_ID = CDDP_SNSR_ID_FIRST
-
     CDDP_SNSR_ID_LAST = 19
 
-    CDDP_RES_ID_FIRST = 92                      # 99 through 99 are reserved because only 192 bits are available to send the interface mask
-    CDDP_RES_ID_LAST = 99                       # so the simulated IDs would not be able to replicate some embedded IDs
+    CDDP_RES_ID_FIRST = 100                     # 0-9 are reserved for sys IDs, which the simulator also uses
+    CDDP_RES_ID_LAST  = 109
 
     # Simulated Data IDs are used to simulate embedded functions, they are the embedded ID counterpart offset by 100
-    CDDP_SIM_DATA_ID_FIRST = 100
-
-    CDDP_SIM_SNSR_ID_FIRST = CDDP_SIM_DATA_ID_FIRST
-
-    CDDP_SIM_SNSR_DIST_ID = 110,
-
-    CDDP_SIM_DATA_ID_LAST = 192
+    CDDP_SIM_DATA_ID_FIRST = 110
+    CDDP_SIM_DATA_ID_LAST  = 200
 
     CDDP_DATA_ID_LAST = CDDP_SIM_DATA_ID_LAST
 
     CDDP_SYS_DATA_ID_COUNT = 10
-    CDDP_SIM_DATA_ID_COUNT = 93
-    CDDP_DATA_ID_COUNT     = 192
+    CDDP_SIM_DATA_ID_COUNT = 91
+    CDDP_DATA_ID_COUNT     = 200
 
 
 # types
@@ -50,24 +41,41 @@ class DataID(enum.Enum):
 class Packet(ctypes.Structure):
     _fields_ = [
         ("addr", ctypes.c_uint32),
-        ("id",   ctypes.c_uint32),
+        ("id",   ctypes.c_uint8),
         ("tick", ctypes.c_uint64),
-        ("data", ctypes.POINTER(ctypes.c_uint8)),
-        ("buf",  ctypes.POINTER(ctypes.c_uint8))
+        ("seq",  ctypes.c_uint32),
+        ("data", ctypes.c_uint8 * CDDP_DATA_SIZE),
+
+        ("buf",  ctypes.c_uint8 * (CDDP_PKT_SIZE - 1 - 2*4 - 8 - CDDP_DATA_SIZE))
     ]
 
 
 class ConnData(ctypes.Structure):
     _fields_ = [
-        ("device", ctypes.c_uint8),
-        ("intrf",  ctypes.POINTER(ctypes.c_uint8)),
-        ("wrtbl",  ctypes.POINTER(ctypes.c_uint8)),
-        ("buf",    ctypes.POINTER(ctypes.c_uint8))
+        ("device",      ctypes.c_uint8),
+        ("intrf_count", ctypes.c_uint8),
+
+        ("buf", ctypes.c_uint8 * (CDDP_PKT_SIZE - 2*1))
     ]
 
 
 class ConnackData(ctypes.Structure):
     _fields_ = [
-        ("addr", ctypes.c_uint32),
-        ("buf",  ctypes.POINTER(ctypes.c_uint8))
+        ("addr",       ctypes.c_uint32),
+        ("intrf_cont", ctypes.c_uint8),
+
+        ("buf", ctypes.c_uint8 * (CDDP_PKT_SIZE - 2*1))
+    ]
+
+
+class IntrfData(ctypes.Structure):
+    _fields_ = [
+        ("id", ctypes.c_uint8),
+        ("frmt", ctypes.c_uint8),
+        ("wrtbl", ctypes.c_bool),
+        ("count", ctypes.c_uint32),
+        ("size", ctypes.c_uint32),
+        ("name", ctypes.c_char * 16),
+
+        ("buf", ctypes.c_uint8 * (CDDP_PKT_SIZE - 3*1 - 2*4 - 16*1))
     ]

@@ -31,8 +31,8 @@
 
 // CDDP types
 
-typedef enum
-{
+typedef uint8_t cddp_err_t;
+enum {
     CDDP_ERR_FIRST = 0,
 
     CDDP_ERR_NONE  = CDDP_ERR_FIRST,
@@ -43,9 +43,11 @@ typedef enum
     CDDP_ERR_LAST,
 
     CDDP_ERR_COUNT = CDDP_ERR_LAST - CDDP_ERR_FIRST
-} cddp_err_t;
+};
 
-typedef enum 
+
+typedef uint8_t cddp_data_id_t;
+enum 
 {
 
     CDDP_DATA_ID_FIRST = 0,
@@ -55,31 +57,18 @@ typedef enum
 
     CDDP_SYS_DATA_CONN     = CDDP_SYS_DATA_ID_FIRST,
     CDDP_SYS_DATA_CONNACK,
+    CDDP_SYS_DATA_INTRF,
     CDDP_SYS_DATA_KICK,
     CDDP_SYS_DATA_DISCONN,
 
     CDDP_SYS_DATA_ID_LAST  = 9,
-
-    // Sensor IDs are used to store and send data to connected sensors by the sensor module
-    CDDP_SNSR_ID_FIRST     = 10,
-
-    CDDP_SNSR_DIST_ID      = CDDP_SNSR_ID_FIRST,
-
-    CDDP_SNSR_ID_LAST      = 19,
-
-    CDDP_RES_ID_FIRST      = 92,    // 99 through 99 are reserved because only 192 bits are available to send the interface mask
-    CDDP_RES_ID_LAST       = 99,    // so the simulated IDs would not be able to replicate some embedded IDs
+    
+    CDDP_RES_ID_FIRST      = 100,   // 0-9 are reserved for sys IDs, which the simulator also uses
+    CDDP_RES_ID_LAST       = 109,
 
     // Simulated Data IDs are used to simulate embedded functions, they are the embedded ID counterpart offset by 100
-    CDDP_SIM_DATA_ID_FIRST = 100,
-
-
-    CDDP_SIM_SNSR_ID_FIRST = CDDP_SIM_DATA_ID_FIRST,
-
-    CDDP_SIM_SNSR_DIST_ID  = 110,
-
-
-    CDDP_SIM_DATA_ID_LAST  = 192,
+    CDDP_SIM_DATA_ID_FIRST = 110,
+    CDDP_SIM_DATA_ID_LAST  = 200,
 
 
     CDDP_DATA_ID_LAST      = CDDP_SIM_DATA_ID_LAST,
@@ -87,11 +76,11 @@ typedef enum
     CDDP_SYS_DATA_ID_COUNT = CDDP_SYS_DATA_ID_LAST - CDDP_SYS_DATA_ID_FIRST + 1,
     CDDP_SIM_DATA_ID_COUNT = CDDP_SIM_DATA_ID_LAST - CDDP_SIM_DATA_ID_FIRST + 1,
     CDDP_DATA_ID_COUNT = CDDP_DATA_ID_LAST - CDDP_DATA_ID_FIRST
+};
 
-} cddp_data_id_t;
 
-
-typedef enum {
+typedef uint8_t cddp_device_t;
+enum {
 
     CDDP_DEVICE_FIRST = 0,
 
@@ -102,78 +91,24 @@ typedef enum {
 
     CDDP_DEVICE_COUNT = CDDP_DEVICE_LAST - CDDP_DEVICE_FIRST + 1
 
-} cddp_device_t;
+};
 
 
 // displayable data formats
-typedef enum {
+typedef uint8_t cddp_data_frmt_t;
+enum {
     CDDP_DATA_FRMT_FIRST = 0,
 
-    CDDP_DATA_FMRT_UINT8 = CDDP_DATA_FRMT_FIRST,
-    CDDP_DATA_FMRT_UINT16,
-    CDDP_DATA_FMRT_UINT32,
-    CDDP_DATA_FMRT_UINT64,
-
-    CDDP_DATA_FMRT_INT8,
-    CDDP_DATA_FMRT_INT16,
-    CDDP_DATA_FMRT_INT32,
-    CDDP_DATA_FMRT_INT64,
-
-    CDDP_DATA_FRMT_CHAR,
-    CDDP_DATA_FMRT_CHAR8,
-    CDDP_DATA_FMRT_CHAR16,
-    CDDP_DATA_FMRT_CHAR32,
-    CDDP_DATA_FMRT_CHAR64,
-
+    CDDP_DATA_FMRT_UINT = CDDP_DATA_FRMT_FIRST,
+    CDDP_DATA_FMRT_INT,
+    CDDP_DATA_FRMT_STRING,
     CDDP_DATA_FRMT_FLOAT,
     CDDP_DATA_FRMT_DOUBLE,
     CDDP_DATA_FRMT_BOOL,
 
     CDDP_DATA_FRMT_LAST,
     CDDP_DATA_FRMT_COUNT = CDDP_DATA_FRMT_LAST - CDDP_DATA_FRMT_FIRST
-} cddp_data_frmt_t;
-
-
-// monitor display formats
-typedef enum 
-{
-    CDDP_MNTR_FRMT_FIRST = 0,
-
-    CDDP_MNTR_FRMT_RAW = CDDP_MNTR_FRMT_FIRST,
-
-    CDDP_MNTR_FRMT_DEGREE,
-    CDDP_MNTR_FRMT_PERCENT,
-    CDDP_MNTR_FRMT_TEXT,
-
-    CDDP_MNTR_FRMT_DECIMAL1,
-    CDDP_MNTR_FRMT_DECIMAL2,
-    CDDP_MNTR_FRMT_DECIMAL3,
-    CDDP_MNTR_FRMT_DECIMAL4,
-    CDDP_MNTR_FRMT_DECIMAL5,
-    CDDP_MNTR_FRMT_DECIMAL6,
-    CDDP_MNTR_FRMT_DECIMAL7,
-    CDDP_MNTR_FRMT_DECIMAL8,
-
-    CDDP_MNTR_FRMT_SLIDER,
-    CDDP_MNTR_FRMT_CHECKBOX,
-
-    CDDP_MNTR_FRMT_LAST,
-    CDDP_MNTR_FRMT_COUNT = CDDP_MNTR_FRMT_LAST - CDDP_MNTR_FRMT_FIRST
-} cddp_mntr_frmt_t;
-
-
-typedef uint64_t cddp_data_tick_t;
-
-// Sensors for logging and display
-typedef enum 
-{
-    CDDP_SNSR_FIRST = 0,
-
-    CDDP_SNSR_TEST,
-
-    CDDP_SNSR_LAST,
-    CDDP_SNSR_COUNT = CDDP_SNSR_LAST - CDDP_SNSR_FIRST,
-} cddp_snsr_t;
+};
 
 
 typedef struct 
@@ -195,40 +130,53 @@ typedef struct
 
 typedef struct {
     uint8_t device;
-    uint8_t intrf[ CDDP_CONN_PKT_INTRFC_BYTELEN ];
-                                                // bitmask of enabled data ids
-    uint8_t wrtbl[ CDDP_CONN_PKT_INTRFC_BYTELEN ];
-                                                // if each data id is writeable
+    uint8_t intrf_count;
 
-    uint8_t buf[ CDDP_DATA_SIZE - sizeof( uint8_t ) - CDDP_CONN_PKT_INTRFC_BYTELEN - CDDP_CONN_PKT_INTRFC_BYTELEN ];
+    uint8_t buf[ CDDP_DATA_SIZE - 2*sizeof( uint8_t ) ];
 } cddp_conn_data_t;
+
+
+typedef struct {
+    uint8_t  id;
+    uint8_t  frmt;
+    bool     wrtbl;
+    uint32_t count;
+    uint32_t size;
+    char     name[16];
+
+    uint8_t buf[ CDDP_DATA_SIZE - 2*sizeof(uint8_t) - sizeof(bool) - 2*sizeof(uint32_t) - 16*sizeof(char)];
+} cddp_intrf_data_t;
 
 
 typedef struct
 {
-    uint32_t addr;
+    uint32_t addr;                              // assign device an address
+    uint8_t  intrf_cnt;                         // confirm number of interfaces
 
     uint8_t buf[ CDDP_DATA_SIZE - sizeof( uint32_t ) ];
 } cddp_connack_data_t;
 
 
-
 typedef struct 
 {
-    uint32_t         addr;
-    cddp_data_id_t   id;
-    cddp_data_tick_t tick;
-    uint8_t data[ CDDP_DATA_SIZE ];
-    uint8_t buf[ CDDP_PKT_SIZE -  CDDP_DATA_SIZE - sizeof( uint32_t ) - sizeof( cddp_data_id_t ) - sizeof( cddp_data_tick_t ) ];
+    uint32_t addr;
+    uint8_t  id;
+    uint64_t tick;
+    uint32_t seq;
+    uint8_t  data[ CDDP_DATA_SIZE ];
+
+    uint8_t  buf[ CDDP_PKT_SIZE -  CDDP_DATA_SIZE - 2*sizeof( uint32_t ) - sizeof( uint8_t ) - sizeof( uint64_t ) ];
 } cddp_pkt_t;
 // assert size == 128
 
 
 typedef struct 
 {
-    bool       enabled;
-    bool       writable;
-    cddp_pkt_t pkt;
+    uint64_t tick;
+    bool     enabled;
+    uint8_t  data[ CDDP_DATA_SIZE ];
+
+    cddp_intrf_data_t intrf;
 } cddp_intrf_t;
 // assert size == 128 ? - maybe want to store extra data on data other the data synced w/ other device
 
@@ -239,11 +187,11 @@ int cddp_init( cddp_cfg_t* cfg, cddp_intrf_t* buf, size_t buf_size );
 int cddp_start( void );
 int cddp_stop( void );
 
-int cddp_data_enable( cddp_data_id_t id );
-int cddp_data_disable( cddp_data_id_t id );
+int cddp_intrf_enable( uint8_t id, uint8_t frmt, bool wrtbl, uint32_t count, uint32_t size, const char* name );
+int cddp_intrf_disable( uint8_t id );
 
 int cddp_data_set( cddp_data_id_t id, void* data );
-int cddp_data_get( cddp_data_id_t id, void* data, cddp_data_tick_t* tick );
+int cddp_data_get( cddp_data_id_t id, void* data, uint64_t* tick );
 
 bool cddp_connected( void );
 

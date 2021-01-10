@@ -11,17 +11,17 @@
 
 // static variables
 
-static uint8_t          s_conn;                 // socket connection
-static cddp_data_tick_t s_tick;                 // current tick
-static cddp_data_tick_t s_tick_init;            // initial tick
+static uint8_t  s_conn;                         // socket connection
+static uint64_t s_tick;                         // current tick
+static uint64_t s_tick_init;                    // initial tick
 
-static bool             s_init;                 // initialization status
-static bool             s_connected;            // connected status
-static bool             s_started;              // task started status
+static bool     s_init;                         // initialization status
+static bool     s_connected;                    // connected status
+static bool     s_started;                      // task started status
 
 
-static pthread_attr_t   s_cddp_thread_attr;     // task thread attributes
-static pthread_t        s_cddp_thread_id;       // task thread id
+static pthread_attr_t s_cddp_thread_attr;       // task thread attributes
+static pthread_t      s_cddp_thread_id;         // task thread id
 
 
 /**
@@ -29,15 +29,15 @@ static pthread_t        s_cddp_thread_id;       // task thread id
  *          Otherwise, it will return 0.
  *  
  **/
-static cddp_data_tick_t sim_cddp_tick( void )
+static uint64_t sim_cddp_tick( void )
 {
     // local variables
-    cddp_data_tick_t ret = 0;
+    uint64_t ret = 0;
 
     if( s_tick_init )
     {
         // if tick is initialized, update tick
-        s_tick = (cddp_data_tick_t) time( NULL ) - s_tick_init;
+        s_tick = (uint64_t) time( NULL ) - s_tick_init;
 
         ret = s_tick;
     }
@@ -106,7 +106,7 @@ static int sim_cddp_connect( void )
                 // if the socket was able to connect
 
                 // set static variables
-                s_tick_init = (cddp_data_tick_t)time( NULL );
+                s_tick_init = (uint64_t)time( NULL );
                 s_connected = true;
 
                 printf("Sim CDDP connected.\n");

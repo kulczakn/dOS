@@ -35,10 +35,12 @@
 int main(int argc, char const *argv[]) 
 { 
 	// local variables
-	int 			 rc;
-	cddp_data_id_t   id;
-	cddp_data_tick_t tick;
-	uint8_t 		 buf[ SNSR_DATA_SIZE ];
+	int 	  rc;
+	uint8_t   id;
+	uint64_t  tick_one;
+	uint64_t  tick_two;
+	uint8_t   buf_one[ CDDP_DATA_SIZE ];
+	uint8_t   buf_two[ CDDP_DATA_SIZE ];
 
 	struct timespec req;
 
@@ -47,41 +49,44 @@ int main(int argc, char const *argv[])
 	req.tv_sec  = 1;
 	req.tv_nsec = 150000000;
 
-	id = 110;
+	id = 53;
 
 	// initialize modules
-	// maybe pass to high level init and have high levl init call it w/ pointers so to only use 1 interface
+	// maybe pass to high level init and have high level init call it w/ pointers so to only use 1 interface
 	dos_cddp_init();
-	dos_snsr_init(); 
 
 	// configure high level modules
-	cddp_data_enable( id );
-	snsr_enable( id );
-	// enable sensor
+	cddp_intrf_enable( id, CDDP_DATA_FMRT_INT, false, 1, sizeof( uint64_t ), "Test #1" );
+	cddp_intrf_enable( id, CDDP_DATA_FMRT_INT, true, 1, sizeof( uint64_t ), "Test #2" );
 
 	// start high level module processing
 	cddp_start();
-	snsr_start();
 	
 	// example
 	size_t i = 0;
 	while( rc )
 	{
-		// cddp_data_set( id, buf ); 
+		// set data
+		*buf_one = i % 13;
+		cddp_data_set( id, buf_one );
 
-		// read sensor data
-		snsr_get( id, buf, &tick );
-
+		// sleep
 		nanosleep( &req, &req );
+
+		// read data
+		cddp_data_get( id, buf_one, &tick_one );
+		cddp_data_get( id, buf_two, &tick_two );
 
 		i++;
 		if( i % 3 == 0 )
-			printf("Sensor: %d\n", (uint32_t)(*buf));
+		{
+			printf("Data #%u: %lu at %lu\n", id, (uint64_t)*buf_one, tick_one );
+			printf("Data #%u: %lu at %lu\n", id+1, (uint64_t)*buf_two, tick_two );
+		}
 	}
 
 	// stop high level module processing
 	cddp_stop();
-	snsr_stop();
 
 	// exit
 	return 0;
