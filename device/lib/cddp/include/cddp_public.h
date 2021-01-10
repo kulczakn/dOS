@@ -128,44 +128,59 @@ typedef struct
 } cddp_cfg_t; // cddp interface
 
 
-typedef struct {
-    uint8_t device;
-    uint8_t intrf_count;
+typedef union 
+{
+    struct 
+    {
+        uint8_t device;
+        uint8_t intrf_count;
+    };
 
-    uint8_t buf[ CDDP_DATA_SIZE - 2*sizeof( uint8_t ) ];
+    uint8_t buf[ CDDP_DATA_SIZE ];
 } cddp_conn_data_t;
 
 
-typedef struct {
-    uint8_t  id;
-    uint8_t  frmt;
-    bool     wrtbl;
-    uint32_t count;
-    uint32_t size;
-    char     name[16];
+typedef union 
+{
+    struct 
+    {
+        uint8_t  id;
+        uint8_t  frmt;
+        bool     wrtbl;
+        char pad1;
+        uint32_t count;
+        uint32_t size;
+        char     name[16];
+    };
 
-    uint8_t pad[ CDDP_DATA_SIZE - 2*sizeof(uint8_t) - sizeof(bool) - 2*sizeof(uint32_t) - 16*sizeof(char)];
+    uint8_t buf[ CDDP_DATA_SIZE ];
 } cddp_intrf_data_t;
 
 
-typedef struct
+typedef union
 {
-    uint32_t addr;                              // assign device an address
-    uint8_t  intrf_cnt;                         // confirm number of interfaces
+    struct
+    {
+        uint32_t addr;                              // assign device an address
+        uint8_t  intrf_cnt;                         // confirm number of interfaces
+    };
 
-    uint8_t pad[ CDDP_DATA_SIZE - sizeof( uint32_t ) ];
+    uint8_t buf[ CDDP_DATA_SIZE ];
 } cddp_connack_data_t;
 
 
-typedef struct 
+typedef union 
 {
-    uint32_t addr;
-    uint8_t  id;
-    uint64_t tick;
-    uint32_t seq;
-    uint8_t  data[ CDDP_DATA_SIZE ];
+    struct
+    {
+        uint32_t addr;
+        uint8_t  id;
+        uint64_t tick;
+        uint32_t seq;
+        uint8_t  data[ CDDP_DATA_SIZE ];
+    };
 
-    uint8_t  pad[ CDDP_PKT_SIZE -  CDDP_DATA_SIZE - 2*sizeof( uint32_t ) - sizeof( uint8_t ) - sizeof( uint64_t ) ];
+    uint8_t  buf[ CDDP_PKT_SIZE ];
 } cddp_pkt_t;
 // assert size == 128
 

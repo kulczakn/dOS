@@ -38,44 +38,76 @@ class DataID(enum.Enum):
 
 # types
 
-class Packet(ctypes.Structure):
+class _DataBuf(ctypes.Structure):
     _fields_ = [
-        ("addr", ctypes.c_uint32),
-        ("id",   ctypes.c_uint8),
-        ("tick", ctypes.c_uint64),
-        ("seq",  ctypes.c_uint32),
-        ("data", ctypes.c_uint8 * CDDP_DATA_SIZE),
-
-        ("buf",  ctypes.c_uint8 * (CDDP_PKT_SIZE - 1 - 2*4 - 8 - CDDP_DATA_SIZE - 3)) # extra padding for alignement
+        ("buf", ctypes.c_uint8 * CDDP_DATA_SIZE)
     ]
 
 
-class ConnData(ctypes.Structure):
+class _PacketBuf(ctypes.Structure):
+    _fields_ = [
+        ("buf", ctypes.c_uint8 * CDDP_PKT_SIZE)
+    ]
+
+
+class _ConnDataStruct(ctypes.Structure):
     _fields_ = [
         ("device",      ctypes.c_uint8),
-        ("intrf_count", ctypes.c_uint8),
-
-        ("buf", ctypes.c_uint8 * (CDDP_PKT_SIZE - 2*1))
+        ("intrf_count", ctypes.c_uint8)
     ]
 
 
-class ConnackData(ctypes.Structure):
+class _ConnackDataStruct(ctypes.Structure):
     _fields_ = [
         ("addr",       ctypes.c_uint32),
-        ("intrf_cont", ctypes.c_uint8),
-
-        ("buf", ctypes.c_uint8 * (CDDP_PKT_SIZE - 2*1))
+        ("intrf_cont", ctypes.c_uint8)
     ]
 
 
-class IntrfData(ctypes.Structure):
+class _IntrfDataStruct(ctypes.Structure):
     _fields_ = [
         ("id", ctypes.c_uint8),
         ("frmt", ctypes.c_uint8),
         ("wrtbl", ctypes.c_bool),
         ("count", ctypes.c_uint32),
         ("size", ctypes.c_uint32),
-        ("name", ctypes.c_char * 16),
+        ("name", ctypes.c_char * 16)
+    ]
 
-        ("pad", ctypes.c_uint8 * (CDDP_DATA_SIZE - 3*1 - 2*4 - 16*1 - 1)) # extra padding for alignement
+
+class _PacketStruct(ctypes.Structure):
+    _fields_ = [
+        ("addr", ctypes.c_uint32),
+        ("id",   ctypes.c_uint8),
+        ("tick", ctypes.c_uint64),
+        ("seq",  ctypes.c_uint32),
+        ("data", ctypes.c_uint8 * CDDP_DATA_SIZE)
+    ]
+
+
+class Packet(ctypes.Union):
+    _fields_ = [
+        ("pkt", _PacketStruct),
+        ("buf", _PacketBuf)
+    ]
+
+
+class ConnData(ctypes.Union):
+    _fields_ = [
+        ("data", _ConnDataStruct),
+        ("buf",  _DataBuf)
+    ]
+
+
+class ConnackData(ctypes.Structure):
+    _fields_ = [
+        ("data", _ConnackDataStruct),
+        ("buf",  _DataBuf)
+    ]
+
+
+class IntrfData(ctypes.Structure):
+    _fields_ = [
+        ("data", _IntrfDataStruct),
+        ("buf",  _DataBuf)
     ]
