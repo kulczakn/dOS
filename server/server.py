@@ -1,11 +1,10 @@
-import asyncio
 import CDDP
 
 import uvicorn
 from fastapi import FastAPI
 
 
-async def main():
+def main():
     # local variables
 
     # create CDDP server
@@ -19,4 +18,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

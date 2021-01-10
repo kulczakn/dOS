@@ -8,3 +8,5 @@ server/venv
 
 # files types
 *.pyc
+device/lib/.DS_Store
+device/.DS_Store

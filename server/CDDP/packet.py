@@ -46,7 +46,7 @@ class Packet(ctypes.Structure):
         ("seq",  ctypes.c_uint32),
         ("data", ctypes.c_uint8 * CDDP_DATA_SIZE),
 
-        ("buf",  ctypes.c_uint8 * (CDDP_PKT_SIZE - 1 - 2*4 - 8 - CDDP_DATA_SIZE))
+        ("buf",  ctypes.c_uint8 * (CDDP_PKT_SIZE - 1 - 2*4 - 8 - CDDP_DATA_SIZE - 3)) # extra padding for alignement
     ]
 
 
@@ -77,5 +77,5 @@ class IntrfData(ctypes.Structure):
         ("size", ctypes.c_uint32),
         ("name", ctypes.c_char * 16),
 
-        ("buf", ctypes.c_uint8 * (CDDP_PKT_SIZE - 3*1 - 2*4 - 16*1))
+        ("pad", ctypes.c_uint8 * (CDDP_DATA_SIZE - 3*1 - 2*4 - 16*1 - 1)) # extra padding for alignement
     ]

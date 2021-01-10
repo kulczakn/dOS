@@ -144,7 +144,7 @@ typedef struct {
     uint32_t size;
     char     name[16];
 
-    uint8_t buf[ CDDP_DATA_SIZE - 2*sizeof(uint8_t) - sizeof(bool) - 2*sizeof(uint32_t) - 16*sizeof(char)];
+    uint8_t pad[ CDDP_DATA_SIZE - 2*sizeof(uint8_t) - sizeof(bool) - 2*sizeof(uint32_t) - 16*sizeof(char)];
 } cddp_intrf_data_t;
 
 
@@ -153,7 +153,7 @@ typedef struct
     uint32_t addr;                              // assign device an address
     uint8_t  intrf_cnt;                         // confirm number of interfaces
 
-    uint8_t buf[ CDDP_DATA_SIZE - sizeof( uint32_t ) ];
+    uint8_t pad[ CDDP_DATA_SIZE - sizeof( uint32_t ) ];
 } cddp_connack_data_t;
 
 
@@ -165,7 +165,7 @@ typedef struct
     uint32_t seq;
     uint8_t  data[ CDDP_DATA_SIZE ];
 
-    uint8_t  buf[ CDDP_PKT_SIZE -  CDDP_DATA_SIZE - 2*sizeof( uint32_t ) - sizeof( uint8_t ) - sizeof( uint64_t ) ];
+    uint8_t  pad[ CDDP_PKT_SIZE -  CDDP_DATA_SIZE - 2*sizeof( uint32_t ) - sizeof( uint8_t ) - sizeof( uint64_t ) ];
 } cddp_pkt_t;
 // assert size == 128
 

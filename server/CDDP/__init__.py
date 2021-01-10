@@ -10,6 +10,7 @@ from .packet import (
     Packet,
 
     ConnData,
-    ConnackData
+    ConnackData,
+    IntrfData,
     # SnsrData ...
 )
