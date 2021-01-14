@@ -48,10 +48,10 @@ class Server:
         server_socket.bind((self.host, self.port))
 
         # start worker tasks
-        conn_thread = threading.Thread(self.conn_worker())
-        input_thread = threading.Thread(self.input_worker())
-        output_thread = threading.Thread(self.output_worker())
-        packet_thread = threading.Thread(self.packet_worker())
+        conn_thread = threading.Thread(target=self.conn_worker)
+        input_thread = threading.Thread(target=self.input_worker)
+        output_thread = threading.Thread(target=self.output_worker)
+        packet_thread = threading.Thread(target=self.packet_worker)
 
         conn_thread.start()
         input_thread.start()

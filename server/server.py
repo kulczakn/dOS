@@ -14,7 +14,7 @@ def main():
     )
 
     # run CDDP Server
-    await cddp_server.run()
+    cddp_server.run()
 
 
 if __name__ == "__main__":

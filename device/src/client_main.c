@@ -75,7 +75,7 @@ int main(int argc, char const *argv[])
 
 		// read data
 		cddp_data_get( id, buf_one, &tick_one );
-		cddp_data_get( id, buf_two, &tick_two );
+		cddp_data_get( id+1, buf_two, &tick_two );
 
 		i++;
 		if( i % 3 == 0 )
