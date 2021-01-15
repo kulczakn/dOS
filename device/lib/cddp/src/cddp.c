@@ -291,7 +291,6 @@ static int s_cddp_handshake( void )
         !s_handshook
       )
     {
-
         // copy data
         conn_data.device      = *s_device;
         conn_data.intrf_count = s_intrf_count;

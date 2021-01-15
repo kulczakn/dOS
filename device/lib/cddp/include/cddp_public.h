@@ -177,7 +177,13 @@ typedef union
         uint8_t  id;
         uint64_t tick;
         uint32_t seq;
-        uint8_t  data[ CDDP_DATA_SIZE ];
+        union
+        {
+            cddp_conn_data_t    conn_data;
+            cddp_intrf_data_t   intrf_data;
+            cddp_connack_data_t connack_data;
+            uint8_t             data[ CDDP_DATA_SIZE ];
+        };
     };
 
     uint8_t  buf[ CDDP_PKT_SIZE ];

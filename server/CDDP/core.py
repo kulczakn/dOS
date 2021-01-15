@@ -13,6 +13,10 @@ CDDP_RECEIVE_TIMEOUT = 10
 CDDP_TASK_TICKRATE   = 100
 
 
+def struct_to_bytes(data: ctypes.Structure, size: int) -> bytes:
+    return (ctypes.c_uint8 * size)(*list(bytearray(data)))
+
+
 class Server:
 
     def __init__(self, host, port, loop=None):
@@ -170,50 +174,52 @@ class Server:
             # if this is a new connection, wait for CONN packet
             attempt = 0
             pkt = self.receive(conn, CDDP_CONN_TIMEOUT)
-            while pkt.id != DataID.CDDP_SYS_DATA_CONN and attempt < retry:
+            while pkt.id != DataID.CDDP_SYS_DATA_CONN.value and attempt < retry:
                 # ignore other packets
                 pkt = self.receive(conn, CDDP_CONN_TIMEOUT)
                 attempt = attempt + 1
 
         if pkt.id == DataID.CDDP_SYS_DATA_CONN.value:
-            # if valid CONN packet has been acquired
-            conn_data = ConnData.from_buffer(pkt.data)
+            # if valid CONN packet has been acquired, get the connection data
+            conn_data = ConnData.from_buffer_copy(pkt.buf)
 
             # create first CONNACK packet
             connack_data = ConnackData()
-            connack_data.data.addr = device.address
+            connack_data.addr = device.address
+            connack_data.intrf_count = -1
 
             connack_pkt = Packet()
 
-            connack_pkt.pkt.id   = DataID.CDDP_SYS_DATA_CONNACK.value
-            connack_pkt.pkt.tick = 0
-            connack_pkt.pkt.seq  = 0
-            connack_pkt.pkt.data = bytes(connack_data.buf)
+            connack_pkt.addr = device.address
+            connack_pkt.id   = DataID.CDDP_SYS_DATA_CONNACK.value
+            connack_pkt.tick = 0
+            connack_pkt.seq  = 0
+            connack_pkt.data = connack_data.buf
 
             # send CONNACK packet
             self.send(connack_pkt)
 
             # read all incoming interface packets
             count = 0
-            while count < conn_data.data.intrf_count and pkt:
+            while count < conn_data.intrf_count and pkt:
                 # read as many interface packets as indicated in CONN pkt
                 pkt = self.receive(conn, CDDP_CONN_TIMEOUT)
-                if pkt and pkt.pkt.id == DataID.CDDP_SYS_DATA_INTRF:
+                if pkt and pkt.id == DataID.CDDP_SYS_DATA_INTRF.value:
                     # if it's an interface packet, get interface data
-                    intrf_data = IntrfData.from_buffer(pkt.data)
+                    intrf_data = IntrfData.from_buffer_copy(pkt.buf)
 
                     # update device
-                    device.interface[pkt.pkt.id].data = intrf_data
+                    device.interface[pkt.id].data = intrf_data
 
                     # continue
                     count = count + 1
 
-            # create CONNACK packet
+            # create the second CONNACK packet
             connack_data = ConnackData()
-            connack_data.data.addr = device.address
-            connack_data.data.intrf_count = count
+            connack_data.addr = device.address
+            connack_data.intrf_count = count
 
-            connack_pkt.pkt.data = bytes(connack_data.buf)
+            connack_pkt.data = connack_data.buf
 
             # send CONNACK packet
             self.send(connack_pkt)
@@ -231,8 +237,14 @@ class Server:
         if timeout:
             conn.settimeout(timeout)
 
-        pkt_buf = conn.recv(CDDP_PKT_SIZE)
-        pkt = Packet.from_buffer(pkt_buf)
+        try:
+            pkt_buf = conn.recv(CDDP_PKT_SIZE)
+            pkt = Packet.from_buffer_copy(pkt_buf)
+
+            print(f"Received packet: {bytes(pkt)}")
+            print(f"Packet id: {pkt.id}")
+        except:
+            pkt = None
 
         if timeout:
             conn.settimeout(0)
@@ -243,30 +255,30 @@ class Server:
         # local variables
         rc = 0
 
-        if pkt.pkt.id in range(DataID.CDDP_DATA_ID_FIRST.value, DataID.CDDP_DATA_ID_LAST.value):
+        if pkt.id in range(DataID.CDDP_DATA_ID_FIRST.value, DataID.CDDP_DATA_ID_LAST.value):
             # if valid packet id, check if device has connected
-            device = self.devices.get(pkt.pkt.addr)
+            device = self.devices.get(pkt.addr)
             if device:
                 # if the device has connected, handle the packet
 
-                if pkt.pkt.id == DataID.CDDP_SYS_DATA_CONN.value:
+                if pkt.id == DataID.CDDP_SYS_DATA_CONN.value:
                     self.new_device_handshake(conn, device, conn_pkt=pkt)
                     self.devices[device.address] = device
                     pass
-                elif pkt.pkt.id == DataID.CDDP_SYS_DATA_CONNACK.value:
+                elif pkt.id == DataID.CDDP_SYS_DATA_CONNACK.value:
                     # Server should not receive this value, error
                     rc = -1
                     pass
-                elif pkt.pkt.id == DataID.CDDP_SYS_DATA_KICK.value:
+                elif pkt.id == DataID.CDDP_SYS_DATA_KICK.value:
                     # Server should not receive this value, error
                     rc = -1
                     pass
-                elif pkt.pkt.id == DataID.CDDP_SYS_DATA_DISCONN.value:
+                elif pkt.id == DataID.CDDP_SYS_DATA_DISCONN.value:
                     pass
                 # check for SNSR packets
-                elif pkt.pkt.id == DataID.CDDP_SNSR_DIST_ID.value:
+                elif pkt.id == DataID.CDDP_SNSR_DIST_ID.value:
                     # update interface data
-                    device.interface[pkt.pkt.id].pkt = pkt
+                    device.interface[pkt.id].pkt = pkt
                     rc = 1
                     pass
 

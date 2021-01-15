@@ -86,28 +86,44 @@ class _PacketStruct(ctypes.Structure):
 
 
 class Packet(ctypes.Union):
+    _anonymous_ = [
+        "_pkt_struct",
+        "_pkt_buf"
+    ]
     _fields_ = [
-        ("pkt", _PacketStruct),
-        ("buf", _PacketBuf)
+        ("_pkt_struct", _PacketStruct),
+        ("_pkt_buf", _PacketBuf)
     ]
 
 
 class ConnData(ctypes.Union):
+    _anonymous_ = [
+        "_conn_data_struct",
+        "_data_buf"
+    ]
     _fields_ = [
-        ("data", _ConnDataStruct),
-        ("buf",  _DataBuf)
+        ("_conn_data_struct", _ConnDataStruct),
+        ("_data_buf",  _DataBuf)
     ]
 
 
 class ConnackData(ctypes.Structure):
+    _anonymous_ = [
+        "_connack_data_struct",
+        "_data_buf"
+    ]
     _fields_ = [
-        ("data", _ConnackDataStruct),
-        ("buf",  _DataBuf)
+        ("_connack_data_struct", _ConnackDataStruct),
+        ("_data_buf",  _DataBuf)
     ]
 
 
 class IntrfData(ctypes.Structure):
+    _anonymous_ = [
+        "_intrf_data_struct",
+        "_data_buf"
+    ]
     _fields_ = [
-        ("data", _IntrfDataStruct),
-        ("buf",  _DataBuf)
+        ("_intrf_data_struct", _IntrfDataStruct),
+        ("_data_buf",  _DataBuf)
     ]
