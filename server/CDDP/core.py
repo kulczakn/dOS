@@ -229,8 +229,22 @@ class Server:
 
         return device.handshook
 
-    def send(self, pkt: Packet):
-        pass
+    def send(self, conn: socket, pkt: Packet):
+
+        # local variables
+        rc = 1
+
+        total = 0
+        while total < CDDP_PKT_SIZE:
+            # Send pkt until all has been transmitted
+            sent = conn.send(bytes(pkt.buf)[bytes_sent:])
+            if sent:
+                total = total + sent
+            else:
+                rc = 0
+                break
+
+        return rc
 
     def receive(self, conn, timeout=0) -> Packet:
 
