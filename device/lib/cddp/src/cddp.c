@@ -149,6 +149,7 @@ int cddp_intrf_enable( uint8_t id, uint8_t frmt, bool wrtbl, uint32_t count, uin
         !s_cddp_intrf[ id ].enabled
       )
     {
+        s_cddp_intrf[ id ].intrf.id    = id;
         s_cddp_intrf[ id ].intrf.frmt  = frmt;
         s_cddp_intrf[ id ].intrf.wrtbl = wrtbl;
         s_cddp_intrf[ id ].intrf.count = count;

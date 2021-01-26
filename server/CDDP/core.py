@@ -122,7 +122,7 @@ class Server:
 
                 if pkt:
                     # if a packet was received, put it into the processing queue
-                    self.input_queue.put(pkt)
+                    self.input_queue.put((conn, pkt))
 
         self.input_queue = None
 
@@ -138,8 +138,8 @@ class Server:
         while not should_quit:
             # empty input queue
             while not self.input_queue.empty():
-                pkt = self.input_queue.get()
-                self.handle_packet(pkt)
+                (conn, pkt) = self.input_queue.get()
+                self.handle_packet(conn, pkt)
 
     def output_worker(self):
         # local variables
@@ -154,8 +154,8 @@ class Server:
             while not self.output_queue.empty():
                 # send all outgoing packets
 
-                pkt = self.output_queue.get()
-                self.send(pkt)
+                (conn, pkt) = self.output_queue.get()
+                self.send(conn, pkt)
 
     def new_device_handshake(self, conn, device, retry=1000, conn_pkt=None):
         # coroutine may run for a bit while waiting for a handshake attempt
@@ -172,6 +172,7 @@ class Server:
 
         else:
             # if this is a new connection, wait for CONN packet
+            print(f"HANDSHAKE: Handling new connection with ({device.address})")
             attempt = 0
             pkt = self.receive(conn, CDDP_CONN_TIMEOUT)
             while pkt.id != DataID.CDDP_SYS_DATA_CONN.value and attempt < retry:
@@ -181,7 +182,7 @@ class Server:
 
         if pkt.id == DataID.CDDP_SYS_DATA_CONN.value:
             # if valid CONN packet has been acquired, get the connection data
-            conn_data = ConnData.from_buffer_copy(pkt.buf)
+            conn_data = pkt.conn_data
 
             # create first CONNACK packet
             connack_data = ConnackData()
@@ -194,19 +195,22 @@ class Server:
             connack_pkt.id   = DataID.CDDP_SYS_DATA_CONNACK.value
             connack_pkt.tick = 0
             connack_pkt.seq  = 0
-            connack_pkt.data = connack_data.buf
+            connack_pkt.connack_data = connack_data
 
             # send CONNACK packet
-            self.send(connack_pkt)
+            print(f"HANDSHAKE: Sending first connack packet")
+            self.send(conn, connack_pkt)
 
             # read all incoming interface packets
+            print(f"HANDSHAKE: Receiving {conn_data.intrf_count} interface packets")
             count = 0
             while count < conn_data.intrf_count and pkt:
                 # read as many interface packets as indicated in CONN pkt
                 pkt = self.receive(conn, CDDP_CONN_TIMEOUT)
                 if pkt and pkt.id == DataID.CDDP_SYS_DATA_INTRF.value:
                     # if it's an interface packet, get interface data
-                    intrf_data = IntrfData.from_buffer_copy(pkt.buf)
+                    print(f"HANDSHAKE: Received #{pkt.intrf_data.id} interface packet")
+                    intrf_data = pkt.intrf_data
 
                     # update device
                     device.interface[pkt.id].data = intrf_data
@@ -219,10 +223,11 @@ class Server:
             connack_data.addr = device.address
             connack_data.intrf_count = count
 
-            connack_pkt.data = connack_data.buf
+            connack_pkt.connack_data = connack_data
 
             # send CONNACK packet
-            self.send(connack_pkt)
+            print(f"HANDSHAKE: Sending second connack packet, received {count}/{conn_data.intrf_count} interface packets")
+            self.send(conn, connack_pkt)
 
             # flag device as connected
             device.handshook = True
@@ -234,11 +239,14 @@ class Server:
         # local variables
         rc = 1
 
+        print(f"Sending {len(bytes(pkt.buf))} bytes, {bytes(pkt.buf)}")
+
         total = 0
         while total < CDDP_PKT_SIZE:
             # Send pkt until all has been transmitted
-            sent = conn.send(bytes(pkt.buf)[bytes_sent:])
+            sent = conn.send(bytes(pkt.buf)[total:])
             if sent:
+                print(f"{sent} bytes sent")
                 total = total + sent
             else:
                 rc = 0
