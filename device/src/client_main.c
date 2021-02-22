@@ -57,7 +57,7 @@ int main(int argc, char const *argv[])
 
 	// configure high level modules
 	cddp_intrf_enable( id, CDDP_DATA_FMRT_INT, false, 1, sizeof( uint64_t ), "Test #1" );
-	cddp_intrf_enable( id, CDDP_DATA_FMRT_INT, true, 1, sizeof( uint64_t ), "Test #2" );
+	cddp_intrf_enable( id+1, CDDP_DATA_FMRT_INT, true, 1, sizeof( uint64_t ), "Test #2" );
 
 	// start high level module processing
 	cddp_start();

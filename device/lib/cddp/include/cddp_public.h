@@ -147,7 +147,7 @@ typedef union
         uint8_t  id;
         uint8_t  frmt;
         bool     wrtbl;
-        char pad1;
+        char     pad1;
         uint32_t count;
         uint32_t size;
         char     name[16];
