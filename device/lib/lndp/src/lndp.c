@@ -14,7 +14,8 @@
  *          STATIC DATA
  */
 
-static lndp_attr_t s_device_attrs[ LNDP_MAX_ATTRIBUTES ];
+static lndp_attr_t   s_device_attrs[ LNDP_MAX_ATTRIBUTES ];
+static lndp_driver_t s_device_driver;
 
 /**
  *          STATIC INTERFACE
@@ -22,6 +23,7 @@ static lndp_attr_t s_device_attrs[ LNDP_MAX_ATTRIBUTES ];
 
 static lndp_attr_t* find_device_attr( uint32_t id );
 static lndp_attr_t* find_empty_device_attr( void );
+static void*        s_cddp_task( void* arg );
 
 /**
  *          PRIVATE INTERFACE IMPLEMENTATION
@@ -32,9 +34,51 @@ static lndp_attr_t* find_empty_device_attr( void );
  */
 
 /* Module interface */
-bool ldnp_init( void );
-bool lndp_start( void );
-bool ldnp_stop( void );
+bool ldnp_init( void )
+{
+
+
+}
+
+
+bool lndp_start( void )
+{
+    /* Local variables */
+    bool success = false;
+
+    if( s_device_driver.initialized() )
+    {
+        /* If the module has been initialized, start it */
+        if( s_device_driver.start( s_lndp_task ) )
+        {
+            /* If start does not return an error, check if it has successfully started just in case */
+            if( s_device_driver.started() )
+            {
+                success = true;
+            }
+        }
+    }
+
+    return success;
+}
+
+bool ldnp_stop( void )
+{
+    /* Local variables */
+    bool success = false;
+
+    if( s_cddp_cfg.stop() )
+    {
+        /* If attempting to stop does not create an error */
+        if( !s_cddp_cfg.started() )
+        {
+            /* ensure task has actually stopped */
+            success = true;
+        }
+    }
+
+    return success;
+}
 
 /* Attribute interface */
 bool lndp_attr_new( lndp_attr_header_t header, uint8_t* data )
@@ -137,6 +181,11 @@ bool lndp_attr_delete( uint32_t id )
 /**
  *          STATIC INTERFACE IMPLEMENTATION
  */
+
+static void* s_cddp_task( void* arg )
+{
+
+}
 
 static lndp_attr_t* find_device_attr( uint32_t id )
 {
