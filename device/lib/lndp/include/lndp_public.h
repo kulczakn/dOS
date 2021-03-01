@@ -59,7 +59,7 @@ enum
 };
 
 
-size_t lndp_block_size_number[ LNDP_BLOCK_SIZE_COUNT ] =
+size_t lndp_block_size_bytes[ LNDP_BLOCK_SIZE_COUNT ] =
 {
     4, 8, 512, 1024
 };
@@ -119,15 +119,15 @@ typedef union
  */
 
 /* Module interface */
-dos_err_t ldnp_init( void );
-dos_err_t lndp_start( void );
-dos_err_t ldnp_stop( void );
+bool ldnp_init( void );
+bool lndp_start( void );
+bool ldnp_stop( void );
 
 /* Attribute interface */
-dos_err_t lndp_attr_new( void );
-dos_err_t lndp_attr_get( void );
-dos_err_t lndp_attr_set( void );
-dos_err_t lndp_attr_delete( void );
+bool lndp_attr_new( lndp_attr_header_t header, uint8_t* data );
+bool lndp_attr_get( uint32_t id, uint8_t* data, size_t size, uint32_t block );
+bool lndp_attr_set( uint32_t id, uint8_t* data, size_t size, uint32_t block );
+bool lndp_attr_delete( uint32_t id );
 
 
 #endif /* _LNDP_PUBLIC_H_ */
