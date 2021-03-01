@@ -49,7 +49,6 @@ enum {
 typedef uint8_t cddp_data_id_t;
 enum 
 {
-
     CDDP_DATA_ID_FIRST = 0,
 
     // System data IDs are reserved IDs used to handle module configuration and connecting to the hub
@@ -75,7 +74,7 @@ enum
 
     CDDP_SYS_DATA_ID_COUNT = CDDP_SYS_DATA_ID_LAST - CDDP_SYS_DATA_ID_FIRST + 1,
     CDDP_SIM_DATA_ID_COUNT = CDDP_SIM_DATA_ID_LAST - CDDP_SIM_DATA_ID_FIRST + 1,
-    CDDP_DATA_ID_COUNT = CDDP_DATA_ID_LAST - CDDP_DATA_ID_FIRST
+    CDDP_DATA_ID_COUNT     = CDDP_DATA_ID_LAST - CDDP_DATA_ID_FIRST
 };
 
 
@@ -108,6 +107,23 @@ enum {
 
     CDDP_DATA_FRMT_LAST,
     CDDP_DATA_FRMT_COUNT = CDDP_DATA_FRMT_LAST - CDDP_DATA_FRMT_FIRST
+};
+
+
+typedef uint8_t cddp_handshake_step_t;
+enum {
+    CDDP_HANDSHAKE_FIRST = 0,
+
+    CDDP_HANDSHAKE_INIT = CDDP_HANDSHAKE_FIRST,
+    CDDP_HANDSHAKE_START,
+    CDDP_HANDSHAKE_CONN_SENT,
+    CDDP_HANDSHAKE_CONNACKED,
+    CDDP_HANDSHAKE_INTRF_SENT,
+    CDDP_HANDSHAKE_INTRF_CONNACKED,
+    CDDP_HANDSHAKE_DONE,
+
+    CDDP_HANDSHAKE_LAST = CDDP_HANDSHAKE_DONE,
+    CDDP_HANDSHAKE_COUNT = CDDP_HANDSHAKE_LAST - CDDP_HANDSHAKE_FIRST
 };
 
 
@@ -144,13 +160,15 @@ typedef union
 {
     struct 
     {
-        uint8_t  id;
-        uint8_t  frmt;
-        bool     wrtbl;
-        char     pad1;
-        uint32_t count;
-        uint32_t size;
-        char     name[16];
+        uint8_t  id;                        /* Data ID                          */
+        uint8_t  frmt;                      /* Data format                      */
+        bool     wrtbl;                     /* If data is writable by server    */
+        bool     immed;                     /* If data updates immediately send */ 
+                                            /* update                           */
+        uint32_t count;                     /* Numer of data blocks             */
+        uint32_t size;                      /* Size of data                     */
+        uint64_t intrvl;                    /* Ticks per update                 */
+        char     name[16];                  /* Data name                        */
     };
 
     uint8_t buf[ CDDP_DATA_SIZE ];
@@ -183,7 +201,7 @@ typedef union
             cddp_intrf_data_t   intrf_data;
             cddp_connack_data_t connack_data;
             uint8_t             data[ CDDP_DATA_SIZE ];
-        };
+        };  // TODO: Find a better way to do this
     };
 
     uint8_t  buf[ CDDP_PKT_SIZE ];
@@ -195,7 +213,13 @@ typedef struct
 {
     uint64_t tick;
     bool     enabled;
-    uint8_t  data[ CDDP_DATA_SIZE ];
+    union
+    {
+        cddp_conn_data_t    conn_data;
+        cddp_intrf_data_t   intrf_data;
+        cddp_connack_data_t connack_data;
+        uint8_t             data[ CDDP_DATA_SIZE ];
+    };      // TODO: So I don't have to do it twice
 
     cddp_intrf_data_t intrf;
 } cddp_intrf_t;
@@ -215,5 +239,10 @@ int cddp_data_set( cddp_data_id_t id, void* data );
 int cddp_data_get( cddp_data_id_t id, void* data, uint64_t* tick );
 
 bool cddp_connected( void );
+
+cddp_handshake_step_t cddp_get_handshake_step( void );
+uint32_t cddp_get_addr( void );
+uint8_t cddp_get_device( void );
+
 
 #endif /* _CDDP_PUBLIC_H_ */

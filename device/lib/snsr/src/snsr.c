@@ -315,4 +315,5 @@ static void* s_snsr_task( void* arg )
         } 
     }
 
+    return NULL;
 }

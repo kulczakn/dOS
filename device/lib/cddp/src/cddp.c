@@ -14,9 +14,10 @@ static cddp_intrf_t* s_cddp_intrf;              // pointer to cddp data buffer i
 static uint64_t      s_intrf_count;             // current total enabled interfaces
 
 static bool      s_handshook;                   // handshake completed flag
+static cddp_handshake_step_t s_handshake_step;  // handshake step
 
-static uint8_t*  s_device;                      // pointer to device type enum saved in cddp buffer
-static int32_t*  s_addr;                        // pointer to device address saved in cddp buffer
+static uint8_t*   s_device;                      // pointer to device type enum saved in cddp buffer
+static uint32_t*  s_addr;                        // pointer to device address saved in cddp buffer
 
 // public interface implementation
 
@@ -57,8 +58,8 @@ int cddp_init( cddp_cfg_t* cddp_cfg, cddp_intrf_t* cddp_intrf, size_t buf_size )
         if( cddp_cfg->initialized() )
         {
             // get pointers
-            conn_data    = ( cddp_conn_data_t* )&cddp_intrf[ CDDP_SYS_DATA_CONN ].data;
-            connack_data = ( cddp_connack_data_t* )&cddp_intrf[ CDDP_SYS_DATA_CONNACK ].data;
+            conn_data    = &cddp_intrf[ CDDP_SYS_DATA_CONN ].conn_data;
+            connack_data = &cddp_intrf[ CDDP_SYS_DATA_CONNACK ].connack_data;
 
             // if low level module initialized, copy data into static variables
             s_cddp_cfg    = *cddp_cfg;
@@ -66,6 +67,7 @@ int cddp_init( cddp_cfg_t* cddp_cfg, cddp_intrf_t* cddp_intrf, size_t buf_size )
             s_intrf_count = 0;
 
             s_handshook = false;
+            s_handshake_step = CDDP_HANDSHAKE_INIT;
 
             s_addr   = &connack_data->addr;
             s_device = &conn_data->device;
@@ -269,6 +271,38 @@ bool cddp_connected( void )
 }
 
 
+/**
+ * @brief   cddp_get_handshake_step returns the handshake step for the cddp module
+ * 
+ * @return 
+ */
+cddp_handshake_step_t cddp_get_handshake_step( void )
+{
+    return s_handshake_step;
+}
+
+/**
+ * @brief   cddp_get_addr returns the handshake step for the cddp module
+ * 
+ * @return 
+ */
+uint32_t cddp_get_addr( void )
+{
+    return *s_addr;
+}
+
+
+/**
+ * @brief   cddp_get_device returns the handshake step for the cddp module
+ * 
+ * @return 
+ */
+uint8_t cddp_get_device( void )
+{
+    return *s_device;
+}
+
+
 // private interface implementation
 
 // static functions
@@ -300,62 +334,77 @@ static int s_cddp_handshake( void )
         conn_pkt.addr = CDDP_SYS_ADDR;
         conn_pkt.id   = CDDP_SYS_DATA_CONN;
         memcpy( conn_pkt.data, &conn_data, CDDP_DATA_SIZE );
-        conn_pkt.tick = s_cddp_cfg.tick();
 
-        if( s_cddp_cfg.send( &conn_pkt, CDDP_PKT_SIZE ) )
+        // Perform initial connection with server
+        while( s_handshake_step != CDDP_HANDSHAKE_CONNACKED )
         {
-            // if conn packet is successfully send, read CONNACK packet
-
-            if( s_cddp_cfg.read( &connack_pkt, CDDP_PKT_SIZE, &bytes, CDDP_CONNACK_TIMEOUT ) &&
-                bytes == CDDP_PKT_SIZE
-              )
+            // Update conn packet tick and send
+            conn_pkt.tick = s_cddp_cfg.tick();
+            if( s_cddp_cfg.send( &conn_pkt, CDDP_PKT_SIZE ) )
             {
-                // if CONNACK packet is successfully read, get CONNACK data
-                memcpy( &connack_data, connack_pkt.data, CDDP_DATA_SIZE );
-                
-                // update local data
-                *s_addr = connack_data.addr;
+                s_handshake_step = CDDP_HANDSHAKE_CONN_SENT;
 
-                // create intrf packet
-                intrf_pkt.addr = CDDP_SYS_ADDR;
-                intrf_pkt.id   = CDDP_SYS_DATA_INTRF;
-                intrf_pkt.tick = s_cddp_cfg.tick();
-
-                // send interface packets
-                for( size_t i = CDDP_DATA_ID_FIRST; i < CDDP_DATA_ID_LAST; i++ )
-                {
-                    if( s_cddp_intrf[ i ].enabled )
-                    {    
-                        // if the id is enabled, copy interface data into packet
-                        memcpy( &intrf_pkt.data, &s_cddp_intrf[ i ].intrf, sizeof( cddp_intrf_data_t ) );
-                        
-                        // send packet
-                        if( s_cddp_cfg.send( &intrf_pkt, CDDP_PKT_SIZE ) )
-                        {
-                            continue;
-                        }
-                    }
-                }
-
-                // read final CONNACK packet
+                // if conn packet is successfully send, read CONNACK packet
                 if( s_cddp_cfg.read( &connack_pkt, CDDP_PKT_SIZE, &bytes, CDDP_CONNACK_TIMEOUT ) &&
                     bytes == CDDP_PKT_SIZE
                   )
                 {
-                    // if CONNACK packet is successfully read, get CONNACK data
+                    // Conn packet acknowledged
+                    s_handshake_step = CDDP_HANDSHAKE_CONNACKED;
+
+                    // get CONNACK data and update local data
                     memcpy( &connack_data, connack_pkt.data, CDDP_DATA_SIZE );
-
-                    // check to make sure all interfaces were received
-                    if( s_intrf_count == connack_data.intrf_cnt )
-                    {
-                        // flag handshake as completed
-                        s_handshook = true;
-
-                        rc = 1;
-                    }
+                    *s_addr = connack_data.addr;
                 }
             }
         }
+
+        // create intrf packet
+        intrf_pkt.addr = CDDP_SYS_ADDR;
+        intrf_pkt.id   = CDDP_SYS_DATA_INTRF;
+
+        // Send interface to server
+        while( s_handshake_step != CDDP_HANDSHAKE_INTRF_CONNACKED )
+        {
+            // send interface packets
+            for( size_t i = CDDP_DATA_ID_FIRST; i < CDDP_DATA_ID_LAST; i++ )
+            {
+                if( s_cddp_intrf[ i ].enabled )
+                {    
+                    // if the id is enabled, copy interface data into packet
+                    memcpy( &intrf_pkt.data, &s_cddp_intrf[ i ].intrf, sizeof( cddp_intrf_data_t ) );
+
+                    // update tick and send
+                    intrf_pkt.tick = s_cddp_cfg.tick();
+                    if( s_cddp_cfg.send( &intrf_pkt, CDDP_PKT_SIZE ) )
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            s_handshake_step = CDDP_HANDSHAKE_INTRF_SENT;
+
+            // read final CONNACK packet
+            if( s_cddp_cfg.read( &connack_pkt, CDDP_PKT_SIZE, &bytes, CDDP_CONNACK_TIMEOUT ) &&
+                bytes == CDDP_PKT_SIZE
+                )
+            {
+                // if CONNACK packet is successfully read, get CONNACK data
+                memcpy( &connack_data, connack_pkt.data, CDDP_DATA_SIZE );
+
+                // check to make sure all interfaces were received
+                if( s_intrf_count == connack_data.intrf_cnt )
+                {
+                    // flag handshake as completed
+                    s_handshake_step = CDDP_HANDSHAKE_INTRF_CONNACKED;
+                }
+            }
+        }
+
+        // Handshake done
+        s_handshake_step = CDDP_HANDSHAKE_DONE;
+        rc = 1;
     }
 
     return rc;
@@ -376,12 +425,16 @@ static int s_cddp_pkt_handle( cddp_pkt_t pkt )
       )
     {
         // special cases
-        if( pkt.id == CDDP_SYS_DATA_KICK )
+        switch( pkt.id )
         {
+        case CDDP_SYS_DATA_KICK:
             rc = CDDP_SYS_DATA_KICK;
-        }
-        else
-        {
+            break;
+
+        case CDDP_SYS_DATA_CONNACK:
+            break;
+
+        default:
             if( s_cddp_intrf[ pkt.id ].enabled && 
                 s_cddp_intrf[ pkt.id ].intrf.wrtbl
               )
@@ -392,9 +445,9 @@ static int s_cddp_pkt_handle( cddp_pkt_t pkt )
 
                 rc = 1;
             }
+            break;
         }
     }
-
 
     return rc;
 }
@@ -432,7 +485,7 @@ static void* s_cddp_task( void* arg )
             // if handshake executes correctly
 
             // enter main loop
-            while( err != -1 )
+            while( err == CDDP_ERR_NONE )
             {
                 // read from socket
                 if( s_cddp_cfg.read( &inc_pkt, CDDP_PKT_SIZE, &bytes, CDDP_TASK_TIMEOUT ) &&
