@@ -23,14 +23,8 @@ typedef struct
     bool ( *initialized ) ( void ); 
     bool ( *started     ) ( void );
 
-    // TODO
-    // networking API
-    // bool start_ap - start wifi access point
-    // bool start_sta - start wifi station 
-    // bool scan - scan until station connects
-    // bool connect - connect to network
-
     /*
+    TODO
 
     LNDP Task
 
@@ -42,7 +36,6 @@ typedef struct
         - If fail mark station for potential ban and restart loop
         - Attempt to connect to given network
         - If fail mark station for potential ban and restart loop
-    3. Wait for wifi access point to stop
     
     4. Open UDP socket
     5. Send device attributes to network
@@ -52,6 +45,7 @@ typedef struct
     */
 
 } lndp_driver_t;
+
 
 typedef uint8_t lndp_block_size_t;
 enum
@@ -64,45 +58,61 @@ enum
     LNDP_BLOCK_SIZE_COUNT
 };
 
+
+size_t lndp_block_size_number[ LNDP_BLOCK_SIZE_COUNT ] =
+{
+    4, 8, 512, 1024
+};
+
+
 typedef struct
 {
-    struct
+    bool writable;
+    uint8_t block_size;
+    uint32_t interval;
+    uint32_t block_count;
+    uint32_t id;
+    uint64_t ttl;
+    uint64_t addr;
+    uint64_t timestamp;
+    char[16] name;
+
+} lndp_attr_header_t;
+
+
+typedef struct
+{
+    lndp_attr_header_t header;
+    union
     {
-        bool writable;
-        uint8_t block_size;
-        uint32_t interval;
-        uint32_t block_count;
-        uint32_t id;
-        uint64_t ttl;
-        uint64_t address;
-        uint64_t timestamp;
-        char[16] name;
-
-    } lndp_attribute_header_t;
-
-
-
+        // TODO: pointers to predefined types of data
+        // maybe a pointer to a "custom" attribute type to help support project side attributes if needed?
+        // space pointed to should be block_size * block_count bytes
+        uint8_t* data;                      
+    }
 } lndp_attr_t;
+
+
+typedef struct
+{
+    bool write;
+    uint8_t block_size;
+    uint32_t block_count;
+    uint32_t id;
+    uint64_t address;
+} lndp_pkt_header_t;
+
 
 typedef union
 {
-    struct
+    lndp_pkt_header_t header;
+    union
     {
-        bool write;
-        uint8_t block_size;
-        uint32_t block_count;
-        uint32_t id;
-        uint64_t address;
-    } lndp_packet_header_t;
-
+        // TODO: Can these be the same as the attributes?
+        uint8_t* data;   
+    }
 } ldnp_pkt_t;
 
-typedef uint64_t lndp_secret_t;
-
-typedef struct
-{
-
-} lndp_net_t;
 
 /**
  *          PUBLIC INTERFACE
@@ -118,8 +128,6 @@ dos_err_t lndp_attr_new( void );
 dos_err_t lndp_attr_get( void );
 dos_err_t lndp_attr_set( void );
 dos_err_t lndp_attr_delete( void );
-
-/* Network interface */
 
 
 #endif /* _LNDP_PUBLIC_H_ */
