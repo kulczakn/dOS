@@ -11,10 +11,6 @@
 
 // static variables
 
-static uint8_t s_socket;
-static struct sockaddr_in s_broadcast_addr;
-static struct sockaddr_in s_server_addr;
-
 static bool     s_init; 
 static bool     s_started;
 
@@ -65,54 +61,6 @@ static bool sim_lndp_open_socket( void )
     }
 
     /* return result */
-    return success;
-}
-
-
-/**
- * @brief   sim_lndp_read reads data packet from the socket interface
- * 
- * @param   data    data to be sent
- * @param   size    max size of the data
- * @param   read    number of bytes read
- * @param   timeout timeout in usec
- * @return  bool 
- */
-static bool sim_lndp_read( void* data, size_t size, size_t* read )
-{
-    // local variables
-    bool success = false;
-    size_t bytes_read;
-
-    /* Read a datagram from the socket */
-    if( ( bytes_read = recvfrom( s_socket, data, size, MSG_WAITALL, (struct sockaddr*)&s_server_addr, sizeof(sockaddr) ) ) > 0 )
-    {
-        /* If a datagram was read, update stats */
-        *read = bytes_read;
-        success = true;
-    }
-
-    return success;
-}
-
-
-/**
- * @brief   sim_lndp_send sends a data packet across the socket interface
- * 
- * @param   data  data to be sent
- * @param   size  size of the data
- * @return  bool 
- */
-static bool sim_lndp_send( void* data, size_t size )
-{
-    /* Local variables */
-    int success = false;
-
-    if( sendto(s_socket, data, size, 0, (struct sockaddr *)&s_broadcast_addr, sizeof(struct sockaddr_in) ) == size )
-    {
-        success = true;
-    }
-
     return success;
 }
 
@@ -185,40 +133,22 @@ bool sim_lndp_init( lndp_driver_t* lndp_driver )
 
     printf("\nSim LNDP initializing...\n");
 
-    /* Clear static variables */
-    s_socket = 0;
-
-    /* Initialize address */
-    s_server_addr.sin_family      = AF_INET;
-    s_server_addr.sin_addr.s_addr = htonl( INADDR_ANY ); 
-    s_server_addr.sin_port        = htons( SIM_LNDP_SERVER_PORT ); 
-
-    s_broadcast_addr.sin_family = AF_INET;
-    s_broadcast_addr.sin_addr.s_addr = htonl( INADDR_BROADCAST );
-    s_broadcast_addr.sin_port   = htons( SIM_LNDP_SERVER_PORT );
-
     memset( lndp_driver, 0, sizeof( lndp_driver_t ) );
 
-    /* Attempt to open socket */
-    if( sim_lndp_open_socket() )
-    {
-        /* If socket was opened, configure LNDP interface */
-        lndp_driver->read  = &sim_lndp_read;
-        lndp_driver->send  = &sim_lndp_send;
-        lndp_driver->start = &sim_lndp_start;
-        lndp_driver->stop  = &sim_lndp_stop;
+    /* Configure LNDP interface */
+    lndp_driver->start = &sim_lndp_start;
+    lndp_driver->stop  = &sim_lndp_stop;
 
-        /* Configure LNDP helper functions */
-        lndp_driver->initialized = &sim_lndp_initialized;
-        lndp_driver->started     = &sim_lndp_started;
+    /* Configure LNDP helper functions */
+    lndp_driver->initialized = &sim_lndp_initialized;
+    lndp_driver->started     = &sim_lndp_started;
 
-        /* Flag simulated hardware interface as initialized */
-        s_init = true;
+    /* Flag simulated hardware interface as initialized */
+    s_init = true;
 
-        success = true;
+    success = true;
 
-        printf("Sim LNDP initialized.\n");
-    }
+    printf("Sim LNDP initialized.\n");
 
     return success;
 }

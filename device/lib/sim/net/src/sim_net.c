@@ -1,14 +1,99 @@
 #include "sim_net_private.h"
 
-static bool s_inited;
-static bool ap_started;
-static bool apsta_started;
-static bool sta_started;
+static bool s_wifi_inited;
+static bool s_ap_started;
+static bool s_sta_started;
 
-bool ( *wifi_initialized ) ( void ); 
-bool ( *ap_started       ) ( void );
-bool ( *apsta_started    ) ( void );
-bool ( *sta_started      ) ( void );
+static bool sim_net_wifi_initialized( void )
+{
+    return s_wifi_inited;
+}
+
+
+static bool sim_net_ap_started( void )
+{
+    return s_ap_started;
+}
+
+
+
+static bool sim_net_apsta_started( void )
+{
+    return s_apsta_started;
+}
+
+
+
+static bool sim_net_sta_started( void )
+{
+    return s_sta_started;
+}
+
+
+static bool sim_net_ap_start( void )
+{
+    /* Local variables */
+    bool success = false;
+
+    // TODO: create messaging attribute as simulated ap
+
+    /* If wifi is initialized, flag ap as started */
+    if( s_wifi_inited )
+    {
+        s_ap_started = true;
+
+        success = true;
+    }
+
+    return success;
+}
+
+
+static bool sim_net_apsta_start( void )
+{
+    /* Local variables */
+    bool success = false;
+
+    /* If wifi is initialized, flag ap and sta as started */
+    if( s_wifi_inited )
+    {
+        s_ap_started = true;
+        s_sta_started = true;
+
+        success = true;
+    }
+
+    return success;
+}
+
+
+
+static bool sim_net_sta_start( void )
+{
+    /* Local variables */
+    bool success = false;
+
+        /* If wifi is initialized, flag sta as started */
+    if( s_wifi_inited )
+    {
+        s_sta_started = true;
+
+        success = true;
+    }
+
+    return success;
+}
+
+
+
+static bool sim_net_stop( void )
+{
+    /* Local variables */
+    bool success = false;
+
+    return success;
+}
+
 
 static bool sim_net_sock_create( uint64_t addr, uint8_t* sock )
 {
@@ -79,6 +164,30 @@ static bool sim_net_sock_read( void* data, size_t size, size_t* read )
         *read = bytes_read;
         success = true;
     }
+
+    return success;
+}
+
+
+bool sim_wifi_init( net_wifi_driver_t* wifi_driver )
+{
+    /* Local variables */
+    bool success = false;
+
+    printf("\nSim Net Wifi initializing...\n");
+
+    /* Clear static variables */
+    s_ap_started  = false;
+    s_sta_started = false;
+    s_wifi_socket = 0;
+
+    /* Initialize wifi */
+    s_wifi_inited = true;
+
+    printf("\nSim Net Wifi initialized\n");
+
+    /* Clear static variables */
+    s_socket = 0;
 
     return success;
 }

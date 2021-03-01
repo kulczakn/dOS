@@ -21,7 +21,7 @@
  *          CONSTANTS
  */
 
-#define SIM_LNDP_SERVER_PORT  8989
+#define SIM_LNDP_SERVER_PORT  8001
 #define SIM_LNDP_STACK_SIZE   PTHREAD_STACK_MIN 
 
 /**
