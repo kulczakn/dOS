@@ -37,35 +37,6 @@ static bool sim_lndp_started( void )
 
 
 /**
- * @brief   sim_lndp_open_socket will open the UDP socket
- * 
- * @return  bool
- */
-static bool sim_lndp_open_socket( void )
-{
-    /* local variables  */
-    bool  success = false;
-
-    /* Open UDP socket */
-
-    if( ( s_socket = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) != 0 )
-    {
-        /* If the UDP server socket was created, bind to INADDR_ANY */
-
-        if( bind( s_socket, (const struct sockaddr *)&s_server_addr, sizeof(struct sockaddr_in) ) != 0 ) 
-        { 
-            /* If the socket binds, flag success */
-
-            success = true;
-        } 
-    }
-
-    /* return result */
-    return success;
-}
-
-
-/**
  *  @brief  sim_lndp_start starts the module task.
  *          After this function has been executed, the device code will be able to access the lndp data interface.
  *          
@@ -85,7 +56,7 @@ static bool sim_lndp_start( void* ( *f ) ( void* ) )
         // if initialized but not started, start task
 
         if( pthread_attr_init( &s_lndp_thread_attr ) == 0 && 
-            pthread_attr_setstacksize( &s_lndp_thread_attr, sim_lndp_STACK_SIZE ) == 0 &&
+            pthread_attr_setstacksize( &s_lndp_thread_attr, SIM_LNDP_STACK_SIZE ) == 0 &&
             pthread_create( &s_lndp_thread_id, &s_lndp_thread_attr, f, NULL )
           )
         {

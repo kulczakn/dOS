@@ -1,8 +1,9 @@
 #include "sim_net_private.h"
 
+static uint8_t s_wifi_socket;
 static bool s_wifi_inited;
-static bool s_ap_started;
-static bool s_sta_started;
+static bool s_wifi_started;
+static net_wifi_mode_t s_wifi_mode;
 
 static bool sim_net_wifi_initialized( void )
 {
@@ -10,23 +11,27 @@ static bool sim_net_wifi_initialized( void )
 }
 
 
-static bool sim_net_ap_started( void )
+static bool sim_net_wifi_started( bool wait )
 {
-    return s_ap_started;
+    /* If wait flagged, wait until wifi starts */
+    while( wait && !s_wifi_started );
+
+    return s_wifi_started;
 }
 
 
-
-static bool sim_net_apsta_started( void )
+static bool sim_net_wifi_stopped( bool wait )
 {
-    return s_apsta_started;
+    /* If wait flagged, wait until wifi stops */
+    while( wait && s_wifi_started );
+
+    return !s_wifi_started;
 }
 
 
-
-static bool sim_net_sta_started( void )
+net_wifi_mode_t wifi_mode( void )
 {
-    return s_sta_started;
+    return s_wifi_mode;
 }
 
 
@@ -40,7 +45,8 @@ static bool sim_net_ap_start( void )
     /* If wifi is initialized, flag ap as started */
     if( s_wifi_inited )
     {
-        s_ap_started = true;
+        s_wifi_started = true;
+        s_wifi_mode = NET_WIFI_MODE_AP;
 
         success = true;
     }
@@ -57,8 +63,8 @@ static bool sim_net_apsta_start( void )
     /* If wifi is initialized, flag ap and sta as started */
     if( s_wifi_inited )
     {
-        s_ap_started = true;
-        s_sta_started = true;
+        s_wifi_started = true;
+        s_wifi_mode = NET_WIFI_MODE_APSTA;
 
         success = true;
     }
@@ -73,10 +79,11 @@ static bool sim_net_sta_start( void )
     /* Local variables */
     bool success = false;
 
-        /* If wifi is initialized, flag sta as started */
+    /* If wifi is initialized, flag sta as started */
     if( s_wifi_inited )
     {
-        s_sta_started = true;
+        s_wifi_started = true;
+        s_wifi_mode = NET_WIFI_MODE_STA;
 
         success = true;
     }
@@ -85,11 +92,18 @@ static bool sim_net_sta_start( void )
 }
 
 
-
-static bool sim_net_stop( void )
+static bool sim_net_wifi_stop( void )
 {
     /* Local variables */
     bool success = false;
+
+    if( s_wifi_started )
+    {
+        s_wifi_started = false;
+        s_wifi_mode =  NET_WIFI_MODE_NONE;
+
+        success = true;
+    }
 
     return success;
 }
@@ -136,13 +150,13 @@ static bool sim_net_sock_delete( uint8_t sock )
 }
 
 
-static bool sim_net_sock_send( void* data, size_t size )
+static bool sim_net_sock_send( uint8_t sock, void* data, size_t size )
 {
     /* Local variables */
     bool success = false;
 
     /* Send data on socket */
-    if( sendto(s_socket, data, size, 0, ( struct sockaddr* )&s_broadcast_addr, sizeof( struct sockaddr ) ) == size )
+    if( sendto(sock, data, size, 0, ( struct sockaddr* )&s_broadcast_addr, sizeof( struct sockaddr ) ) == size )
     {
         success = true;
     }
@@ -151,14 +165,14 @@ static bool sim_net_sock_send( void* data, size_t size )
 }
 
 
-static bool sim_net_sock_read( void* data, size_t size, size_t* read )
+static bool sim_net_sock_read( uint8_t sock, void* data, size_t size, size_t* read )
 {
     /* Local variables */
     bool success = false;
     size_t bytes_read;
 
     /* Read a datagram from the socket */
-    if( ( bytes_read = recvfrom( s_socket, data, size, MSG_WAITALL, (struct sockaddr*)&s_server_addr, sizeof(sockaddr) ) ) > 0 )
+    if( ( bytes_read = recvfrom( sock, data, size, MSG_WAITALL, (struct sockaddr*)&s_server_addr, sizeof(sockaddr) ) ) > 0 )
     {
         /* If a datagram was read, update stats */
         *read = bytes_read;
@@ -169,7 +183,7 @@ static bool sim_net_sock_read( void* data, size_t size, size_t* read )
 }
 
 
-bool sim_wifi_init( net_wifi_driver_t* wifi_driver )
+bool sim_wifi_init( net_driver_t* wifi_driver )
 {
     /* Local variables */
     bool success = false;
@@ -177,17 +191,20 @@ bool sim_wifi_init( net_wifi_driver_t* wifi_driver )
     printf("\nSim Net Wifi initializing...\n");
 
     /* Clear static variables */
-    s_ap_started  = false;
-    s_sta_started = false;
+    s_wifi_started = false;
+    s_wifi_inited = false;
     s_wifi_socket = 0;
+    s_wifi_mode = NET_WIFI_MODE_NONE;
+
+    /* Configure the driver */
+    memset( &wifi_driver, 0, sizeof( net_driver_t ) );
+
+    // wifi_driver->
 
     /* Initialize wifi */
     s_wifi_inited = true;
 
     printf("\nSim Net Wifi initialized\n");
-
-    /* Clear static variables */
-    s_socket = 0;
 
     return success;
 }

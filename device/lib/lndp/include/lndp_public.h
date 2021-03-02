@@ -5,7 +5,11 @@
  *          INCLUDES
  */
 
-#include "err_public.h"
+// #include "err_public.h"
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 /**
  *          CONSTANTS
@@ -22,27 +26,6 @@ typedef struct
     bool ( *start       ) ( void* ( *f ) ( void* ) );
     bool ( *initialized ) ( void ); 
     bool ( *started     ) ( void );
-
-    /*
-    TODO
-
-    LNDP Task
-
-    1. Wait for wifi access point and stations to start
-
-    If no network information is saved or saved information fails
-    2. Scan until station connects
-        - Attempt handshake with station
-        - If fail mark station for potential ban and restart loop
-        - Attempt to connect to given network
-        - If fail mark station for potential ban and restart loop
-    
-    4. Open UDP socket
-    5. Send device attributes to network
-
-    6. Handle incoming and outgoing packets
-    
-    */
 
 } lndp_driver_t;
 
@@ -75,7 +58,7 @@ typedef struct
     uint64_t ttl;
     uint64_t addr;
     uint64_t timestamp;
-    char[16] name;
+    char     name[16];
 
 } lndp_attr_header_t;
 
@@ -89,7 +72,7 @@ typedef struct
         // maybe a pointer to a "custom" attribute type to help support project side attributes if needed?
         // space pointed to should be block_size * block_count bytes
         uint8_t* data;                      
-    }
+    };
 } lndp_attr_t;
 
 
@@ -110,7 +93,7 @@ typedef union
     {
         // TODO: Can these be the same as the attributes?
         uint8_t* data;   
-    }
+    };
 } ldnp_pkt_t;
 
 
@@ -119,7 +102,7 @@ typedef union
  */
 
 /* Module interface */
-bool ldnp_init( void );
+bool ldnp_init( lndp_driver_t* lndp_driver );
 bool lndp_start( void );
 bool ldnp_stop( void );
 

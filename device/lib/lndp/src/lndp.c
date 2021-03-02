@@ -10,6 +10,8 @@
 
 #include "lndp_private.h"
 
+#include "net_public.h"
+
 /**
  *          STATIC DATA
  */
@@ -34,10 +36,29 @@ static void*        s_cddp_task( void* arg );
  */
 
 /* Module interface */
-bool ldnp_init( void )
+bool ldnp_init( lndp_driver_t* lndp_driver )
 {
+    /* Local variables */
+    bool success;
 
+    if( lndp_driver              &&
+        lndp_driver->read        &&
+        lndp_driver->send        &&
+        lndp_driver->initialized &&
+        lndp_driver->started   
+      )
+    {
+        /* If the driver is configured, check if it's initialized */
+        if( lndp_driver->initialized() )
+        {
+            /* If the driver is intialized, initialize the module */
+            s_device_driver = *lndp_driver;
 
+            success = true;
+        }
+    }  
+
+    return success;
 }
 
 
@@ -67,10 +88,10 @@ bool ldnp_stop( void )
     /* Local variables */
     bool success = false;
 
-    if( s_cddp_cfg.stop() )
+    if( s_device_driver.stop() )
     {
         /* If attempting to stop does not create an error */
-        if( !s_cddp_cfg.started() )
+        if( !s_device_driver.started() )
         {
             /* ensure task has actually stopped */
             success = true;
@@ -184,7 +205,28 @@ bool lndp_attr_delete( uint32_t id )
 
 static void* s_cddp_task( void* arg )
 {
+    /* Local variables */
 
+    /*
+    TODO
+
+    LNDP Task
+
+    1. Wait for wifi access point and stations to start
+
+    If no network information is saved or saved information fails
+    2. Scan until station connects
+        - Attempt handshake with station
+        - If fail mark station for potential ban and restart loop
+        - Attempt to connect to given network
+        - If fail mark station for potential ban and restart loop
+    
+    4. Open UDP socket
+    5. Send device attributes to network
+
+    6. Handle incoming and outgoing packets
+    
+    */
 }
 
 static lndp_attr_t* find_device_attr( uint32_t id )
