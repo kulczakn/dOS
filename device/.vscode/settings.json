@@ -4,7 +4,9 @@
         "cstdint": "cpp",
         "__threading_support": "c",
         "lndp_private.h": "c",
-        "lndp_public.h": "c"
+        "lndp_public.h": "c",
+        "sim_lndp_private.h": "c",
+        "sim_lndp_public.h": "c"
     },
     "cmake.configureOnOpen": true,
     "python.pythonPath": "/usr/bin/python3"

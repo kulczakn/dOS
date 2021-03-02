@@ -113,21 +113,21 @@ static bool sim_net_sock_create( uint64_t addr, uint8_t* sock )
 {
     /* Local variables */
     bool    success = false;
-    uint8_t socket  = 0;
-    struct sockaddr socket_address = { 0 };
+    uint8_t new_sock  = 0;
+    struct sockaddr_in socket_address = { 0 };
 
     /* Open UDP socket */
-    if( ( new_socket = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) != 0 )
+    if( ( new_sock = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) != 0 )
     {
         /* If the UDP server socket was created, bind to INADDR_ANY */
         socket_address.sin_family      = AF_INET;
         socket_address.sin_addr.s_addr = htonl( addr ); 
         socket_address.sin_port        = htons( SIM_LNDP_SERVER_PORT ); 
 
-        if( bind( new_socket, (const struct sockaddr *)&socket_address, sizeof(struct sockaddr) ) != 0 ) 
+        if( bind( new_sock, (const struct sockaddr_in *)&socket_address, sizeof(struct sockaddr_in) ) != 0 ) 
         { 
             /* If the socket binds, flag success */
-            *socket = new_socket;
+            *sock = new_sock;
             success = true;
         } 
     }
@@ -141,7 +141,7 @@ static bool sim_net_sock_delete( uint8_t sock )
     /* Local variables */
     bool success = false;
 
-    if( close( sock ) != 0 )
+    if( setsockopt( sock, SOL_SOCKET, SO_REUSEADDR, &true, sizeof( int ) ) == 0 )
     {
         success = true;
     }
@@ -150,13 +150,18 @@ static bool sim_net_sock_delete( uint8_t sock )
 }
 
 
-static bool sim_net_sock_send( uint8_t sock, void* data, size_t size )
+static bool sim_net_sock_send( uint8_t sock, void* data, size_t size, uint64_t addr, uint8_t port )
 {
     /* Local variables */
     bool success = false;
+    static struct sockaddr_in broadcast_addr;
+
+    broadcast_addr.sin_family = AF_INET;                 
+    broadcast_addr.sin_addr.s_addr = htonl( addr );
+    broadcast_addr.sin_port = htons( port );
 
     /* Send data on socket */
-    if( sendto(sock, data, size, 0, ( struct sockaddr* )&s_broadcast_addr, sizeof( struct sockaddr ) ) == size )
+    if( sendto(sock, data, size, 0, ( struct sockaddr_in* )&broadcast_addr, sizeof( struct sockaddr_in ) ) == size )
     {
         success = true;
     }
@@ -165,17 +170,21 @@ static bool sim_net_sock_send( uint8_t sock, void* data, size_t size )
 }
 
 
-static bool sim_net_sock_read( uint8_t sock, void* data, size_t size, size_t* read )
+static bool sim_net_sock_read( uint8_t sock, void* data, size_t size, size_t* read, uint64_t* addr, uint8_t* port )
 {
     /* Local variables */
     bool success = false;
     size_t bytes_read;
+    static struct sockaddr_in msg_addr;
 
     /* Read a datagram from the socket */
-    if( ( bytes_read = recvfrom( sock, data, size, MSG_WAITALL, (struct sockaddr*)&s_server_addr, sizeof(sockaddr) ) ) > 0 )
+    if( ( bytes_read = recvfrom( sock, data, size, MSG_WAITALL, ( struct sockaddr_in* )&msg_addr, sizeof( struct sockaddr_in ) ) ) > 0 )
     {
         /* If a datagram was read, update stats */
         *read = bytes_read;
+        *addr = msg_addr.sin_addr.s_addr;
+        *port = msg_addr.sin_port;
+
         success = true;
     }
 

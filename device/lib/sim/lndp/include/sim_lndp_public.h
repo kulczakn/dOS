@@ -27,6 +27,6 @@
  *          PUBLIC INTERFACE
  */
 
-int sim_lndp_init( lndp_driver_t* lndp_driver );
+bool sim_lndp_init( lndp_driver_t* lndp_driver );
 
 #endif /* _SIM_LNDP_PUBLIC_H_ */

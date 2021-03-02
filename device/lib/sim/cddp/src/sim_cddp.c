@@ -89,7 +89,7 @@ static int sim_cddp_connect( void )
     int rc = -1;
 
     // create and configure socket
-	if( ( s_conn = socket(AF_INET, SOCK_STREAM, 0 ) ) != 0 ) 
+	if( ( s_conn = socket( AF_INET, SOCK_STREAM, 0 ) ) != 0 ) 
 	{ 
         // if the socket was created succesfully
 
@@ -101,7 +101,7 @@ static int sim_cddp_connect( void )
         {
             // if the address was able to be converted to a binary form
 
-            if( connect( s_conn, (struct sockaddr *)&serv_addr, sizeof(serv_addr) ) != -1 ) 
+            if( connect( s_conn, ( struct sockaddr * )&serv_addr, sizeof( serv_addr ) ) != -1 ) 
             {
                 // if the socket was able to connect
 
